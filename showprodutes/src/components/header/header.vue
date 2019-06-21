@@ -25,22 +25,22 @@ export default {
   methods: {
     // 登录退出功能
     // 回到登录界面需要一个提示框
-    goLogin() {
-      this.$confirm("此操作将会回到登录界面， 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    goLogin () {
+      this.$confirm('此操作将会回到登录界面， 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
-        window.localStorage.removeItem("token");
-        this.$router.push("/login");
+        window.localStorage.removeItem('token')
+        this.$router.push('/login')
         this.$message({
-          type: "success",
-          message: "退出成功!"
-        });
-      });
+          type: 'success',
+          message: '退出成功!'
+        })
+      })
     }
   }
-};
+}
 </script>
 
 <style>

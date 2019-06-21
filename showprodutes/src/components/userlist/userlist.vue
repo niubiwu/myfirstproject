@@ -15,7 +15,7 @@
       </el-col>
 
       <el-col :span="2">
-        <el-button type="success" plain>成功按钮</el-button>
+        <el-button type="success" plain>新增用户</el-button>
       </el-col>
     </el-row>
     <!-- 用户数据表格 -->
@@ -30,10 +30,17 @@
       <el-table-column prop="zip" label="操作">
         <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
         <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
-        <el-button size="mini" plain type="warning" icon="el-icon-share"></el-button>
+        <el-button size="mini" plain type="warning" icon="el-icon-check"></el-button>
       </el-table-column>
     </el-table>
     <!-- 分功能栏 -->
+    <el-pagination
+      :current-page="currentPage4"
+      :page-sizes="[100, 200, 300, 400]"
+      :page-size="100"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="400"
+    ></el-pagination>
   </el-card>
 </template>
 

@@ -21,24 +21,28 @@
     <!-- 用户数据表格 -->
     <el-table :data="tableData" border style="width:1070px;">
       <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="150"></el-table-column>
+      <el-table-column prop="username" label="姓名" width="150"></el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
-      <el-table-column prop="phones" label="电话"></el-table-column>
-      <el-table-column prop="user" label="用户状态" width="80">
-        <el-switch active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+      <el-table-column prop="mobile" label="电话"></el-table-column>
+      <el-table-column label="用户状态" width="80">
+        <template slot-scope="scope">
+          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+        </template>
       </el-table-column>
-      <el-table-column prop="zip" label="操作">
-        <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
-        <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
-        <el-button size="mini" plain type="warning" icon="el-icon-check"></el-button>
+      <el-table-column label="操作">
+        <template>
+          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+          <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
+          <el-button size="mini" plain type="warning" icon="el-icon-check"></el-button>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分功能栏 -->
     <el-pagination
-      :page-sizes="[100, 200, 300, 400]"
-      :page-size="100"
+      :page-sizes="pagesizes"
+      :page-size="reqdata.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="400"
+      :total="total"
     ></el-pagination>
   </el-card>
 </template>
@@ -49,9 +53,9 @@ export default {
     return {
       tableData: [
         {
-          name: "admin",
-          email: "2352343fdsgfs",
-          phones: "1546415618964"
+          username: "",
+          email: "",
+          mobile: ""
         }
       ],
       reqdata: {
@@ -59,20 +63,48 @@ export default {
         pagenum: 1,
         pagesize: 5
       },
-      Authorization: ""
+      total: 0,
+      pagesizes: [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100
+      ]
     };
   },
   methods: {
     userData() {
-      var token = window.localStorage.getItem("token");
-      this.Authorization = token;
       this.$http({
         method: "get",
-        url: "http://localhost:8888/api/private/v1/user",
-        data: this.reqdata,
-        header: this.Authorization
+        url: `http://localhost:8888/api/private/v1/users?query=${
+          this.reqdata.query
+        }&pagenum=${this.reqdata.pagenum}&pagesize=${this.reqdata.pagesize}`,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
       }).then(res => {
         console.log(res);
+
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
+          this.tableData = data.users;
+          this.total = data.total;
+        }
       });
     }
   },

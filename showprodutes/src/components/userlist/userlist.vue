@@ -35,7 +35,6 @@
     </el-table>
     <!-- 分功能栏 -->
     <el-pagination
-      :current-page="currentPage4"
       :page-sizes="[100, 200, 300, 400]"
       :page-size="100"
       layout="total, sizes, prev, pager, next, jumper"
@@ -54,8 +53,31 @@ export default {
           email: "2352343fdsgfs",
           phones: "1546415618964"
         }
-      ]
+      ],
+      reqdata: {
+        query: "",
+        pagenum: 1,
+        pagesize: 5
+      },
+      Authorization: ""
     };
+  },
+  methods: {
+    userData() {
+      var token = window.localStorage.getItem("token");
+      this.Authorization = token;
+      this.$http({
+        method: "get",
+        url: "http://localhost:8888/api/private/v1/user",
+        data: this.reqdata,
+        header: this.Authorization
+      }).then(res => {
+        console.log(res);
+      });
+    }
+  },
+  mounted() {
+    this.userData();
   }
 };
 </script>

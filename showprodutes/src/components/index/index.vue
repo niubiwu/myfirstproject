@@ -11,23 +11,25 @@
         <sideBar></sideBar>
       </el-aside>
 
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
 // 引入组件header
-import Header from '../header/header'
+import Header from "../header/header";
 // 引入组件header
-import sideBar from '../sidebar/sidebar'
+import sideBar from "../sidebar/sidebar";
 export default {
   components: {
     Header: Header,
     sideBar: sideBar
   },
   methods: {}
-}
+};
 </script>
 
 <style>
@@ -59,8 +61,6 @@ export default {
   background-color: #e9eef3;
   color: #333;
   height: 100%;
-  text-align: center;
-  line-height: 160px;
 }
 
 .el-container {

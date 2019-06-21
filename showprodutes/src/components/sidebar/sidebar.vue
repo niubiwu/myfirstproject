@@ -2,16 +2,16 @@
   <el-menu
     default-active="2"
     :span="24"
+    :unique-opened="true"
+    :router="true"
     class="el-menu-vertical-demo"
-    @open="handleOpen"
-    @close="handleClose"
   >
     <el-submenu index="1">
       <template slot="title">
         <i class="el-icon-location"></i>
         <span>用户管理</span>
       </template>
-      <el-menu-item index="1-1">
+      <el-menu-item index="/userlist">
         <i class="el-icon-menu"></i>
         <span slot="title">用户列表</span>
       </el-menu-item>
@@ -73,15 +73,8 @@
 
 <script>
 export default {
-  methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
-    }
-  }
-}
+  methods: {}
+};
 </script>
 
 <style>

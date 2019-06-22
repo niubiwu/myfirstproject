@@ -55,7 +55,7 @@
             plain
             type="warning"
             icon="el-icon-check"
-            v-model="scope.row.role_name"
+            @click="getUserFn(scope.row.id)"
           ></el-button>
         </template>
       </el-table-column>
@@ -108,160 +108,214 @@
         <el-button type="primary" @click="putUser(putdata.id)">修 改</el-button>
       </div>
     </el-dialog>
+    <!-- 修改权限列表 -->
+    <el-dialog title="新增用户" :visible.sync="footFormVisible" width="40%">
+      <el-form :model="putdata">
+        <el-form-item label="当前用户" :label-width="formLabelWidth">{{putdata.username}}</el-form-item>
+        <el-form-item label="请选择角色" :label-width="formLabelWidth">
+          <el-select v-model="putdata.rold_name" placeholder="请选择角色">
+            <el-option label="主管" value="zhuhuan"></el-option>
+            <el-option label="测试角色" value="ceshi1"></el-option>
+            <el-option label="测试角色2" value="ceshi2"></el-option>
+            <el-option label="超级管理员" value="shperadmin"></el-option>
+            <el-option label="test" value="test"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="footFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="putRoot(putdata.id)">修 改</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       form: {
-        username: '',
-        password: '',
-        email: '',
-        mobile: ''
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
       },
       tableData: [
         {
-          username: '',
-          email: '',
-          mobile: ''
+          username: "",
+          email: "",
+          mobile: ""
         }
       ],
       reqdata: {
-        query: '',
+        query: "",
         pagenum: 1,
         pagesize: 5
       },
       putdata: {
-        username: '',
-        email: '',
-        mobile: ''
+        username: "",
+        email: "",
+        mobile: ""
       },
       total: 0,
       dialogFormVisible: false,
-      formLabelWidth: '90px',
-      formVisible: false
-    }
+      formLabelWidth: "90px",
+      formVisible: false,
+      footFormVisible: false
+    };
   },
   methods: {
     // 更新列表请求
-    userData () {
+    userData() {
       this.$http({
-        method: 'get',
+        method: "get",
         url: `http://localhost:8888/api/private/v1/users?query=${
           this.reqdata.query
         }&pagenum=${this.reqdata.pagenum}&pagesize=${this.reqdata.pagesize}`,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.tableData = data.users
-          this.total = data.total
+          this.tableData = data.users;
+          this.total = data.total;
         }
-      })
+      });
     },
     // 搜索功能完成
-    searchUsers () {
-      this.userData()
+    searchUsers() {
+      this.userData();
     },
     // 页码翻页功能
-    currentChange (currentPage) {
-      this.reqdata.pagenum = currentPage
-      this.userData()
+    currentChange(currentPage) {
+      this.reqdata.pagenum = currentPage;
+      this.userData();
     },
     // 自定义页容量功能
-    sizeChange (pageSize) {
-      this.reqdata.pagesize = pageSize
-      this.userData()
+    sizeChange(pageSize) {
+      this.reqdata.pagesize = pageSize;
+      this.userData();
     },
     // 新增用户功能
-    addUser () {
+    addUser() {
       this.$http({
-        method: 'post',
-        url: 'http://localhost:8888/api/private/v1/users/',
+        method: "post",
+        url: "http://localhost:8888/api/private/v1/users/",
         data: this.form,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        const { meta } = res.data
+        const { meta } = res.data;
         if (meta.status === 201) {
-          this.userData()
-          this.dialogFormVisible = false
+          this.userData();
+          this.dialogFormVisible = false;
           this.$message({
-            type: 'success',
-            message: '创建成功!'
-          })
+            type: "success",
+            message: "创建成功!"
+          });
         }
-      })
+      });
     },
     // 删除用户信息功能
-    deleteUser (id) {
+    deleteUser(id) {
       this.$http({
-        method: 'delete',
-        url: 'http://localhost:8888/api/private/v1/users/' + id,
+        method: "delete",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        const meta = res.data.meta
+        const meta = res.data.meta;
         if (meta.status === 200) {
-          this.userData()
+          this.userData();
           this.$message({
-            type: 'success',
-            message: '删除成功!'
-          })
+            type: "success",
+            message: "删除成功!"
+          });
         }
-      })
+      });
     },
     // 打开弹窗获得数据
-    getUser (id) {
+    getUser(id) {
       this.$http({
-        method: 'get',
-        url: 'http://localhost:8888/api/private/v1/users/' + id,
+        method: "get",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res)
+        console.log(res);
 
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.formVisible = true
-          this.putdata = data
-          this.id = data.id
+          this.formVisible = true;
+          this.putdata = data;
+          this.id = data.id;
         }
-      })
+      });
     },
     // 修改用户数据功能
-    putUser (id) {
+    putUser(id) {
       this.$http({
-        method: 'put',
-        url: 'http://localhost:8888/api/private/v1/users/' + id,
+        method: "put",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
         data: this.putdata,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        const { meta } = res.data
+        const { meta } = res.data;
         if (meta.status === 200) {
-          this.formVisible = false
-          this.userData()
+          this.formVisible = false;
+          this.userData();
           this.$message({
-            type: 'success',
-            message: '修改成功！'
-          })
+            type: "success",
+            message: "修改成功！"
+          });
         }
-      })
+      });
+    },
+    // 获得数据功能
+    getUserFn(id) {
+      this.$http({
+        method: "get",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        console.log(res);
+
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
+          this.footFormVisible = true;
+          this.putdata = data;
+          this.id = data.id;
+        }
+      });
+    },
+    // 修改权限功能
+    putRoot(id) {
+      this.$http({
+        method: "put",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
+        data: {
+          rid: this.putdata.rold_name
+        },
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        console.log(res);
+      });
     }
   },
-  mounted () {
-    this.userData()
+  mounted() {
+    this.userData();
   }
-}
+};
 </script>
 
 <style>

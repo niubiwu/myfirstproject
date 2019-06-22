@@ -37,7 +37,13 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" plain type="primary" icon="el-icon-edit" v-model="scope.row.id"></el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete" v-model="scope.row.id"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="danger"
+            icon="el-icon-delete"
+            @click="deleteUser(scope.row.id)"
+          ></el-button>
           <el-button
             size="mini"
             plain
@@ -145,7 +151,7 @@ export default {
     addUser() {
       this.$http({
         method: "post",
-        url: "http://localhost:8888/api/private/v1/users",
+        url: "http://localhost:8888/api/private/v1/users/",
         data: this.form,
         headers: {
           Authorization: window.localStorage.getItem("token")
@@ -158,6 +164,25 @@ export default {
           this.$message({
             type: "success",
             message: "创建成功!"
+          });
+        }
+      });
+    },
+    //删除用户信息功能
+    deleteUser(id) {
+      this.$http({
+        method: "delete",
+        url: "http://localhost:8888/api/private/v1/users/" + id,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        const meta = res.data.meta;
+        if (meta.status === 200) {
+          this.userData();
+          this.$message({
+            type: "success",
+            message: "删除成功!"
           });
         }
       });

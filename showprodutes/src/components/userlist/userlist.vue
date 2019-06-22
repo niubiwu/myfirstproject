@@ -20,7 +20,7 @@
       </el-col>
 
       <el-col :span="2">
-        <el-button type="success" plain>新增用户</el-button>
+        <el-button type="success" plain @click="dialogFormVisible = true">新增用户</el-button>
       </el-col>
     </el-row>
     <!-- 用户数据表格 -->
@@ -57,6 +57,27 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <!-- 新增弹框按钮 -->
+    <el-dialog title="新增用户" :visible.sync="dialogFormVisible" width="40%">
+      <el-form :model="form">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input v-model="form.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="form.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="form.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话" :label-width="formLabelWidth">
+          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -64,6 +85,12 @@
 export default {
   data() {
     return {
+      form: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
+      },
       tableData: [
         {
           username: "",
@@ -76,7 +103,9 @@ export default {
         pagenum: 1,
         pagesize: 5
       },
-      total: 0
+      total: 0,
+      dialogFormVisible: false,
+      formLabelWidth: "90px"
     };
   },
   methods: {
@@ -98,6 +127,7 @@ export default {
         }
       });
     },
+    // 搜索功能完成
     searchUsers() {
       this.userData();
     },
@@ -110,6 +140,27 @@ export default {
     sizeChange(pageSize) {
       this.reqdata.pagesize = pageSize;
       this.userData();
+    },
+    //新增用户功能
+    addUser() {
+      this.$http({
+        method: "post",
+        url: "http://localhost:8888/api/private/v1/users",
+        data: this.form,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        const { data, meta } = res.data;
+        if (meta.status === 201) {
+          this.userData();
+          this.dialogFormVisible = false;
+          this.$message({
+            type: "success",
+            message: "创建成功!"
+          });
+        }
+      });
     }
   },
   mounted() {

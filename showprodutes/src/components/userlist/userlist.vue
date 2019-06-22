@@ -9,8 +9,13 @@
     <!-- 搜索框与新增按钮 -->
     <el-row style="margin-top:15px;margin-bottom:15px;">
       <el-col :span="6">
-        <el-input :span="6" placeholder="请输入内容" class="input-with-select el-col">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input
+          :span="6"
+          placeholder="请输入内容"
+          class="input-with-select el-col"
+          v-model="reqdata.query"
+        >
+          <el-button slot="append" icon="el-icon-search" @click="searchUsers"></el-button>
         </el-input>
       </el-col>
 
@@ -30,16 +35,24 @@
         </template>
       </el-table-column>
       <el-table-column label="操作">
-        <template>
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
-          <el-button size="mini" plain type="warning" icon="el-icon-check"></el-button>
+        <template slot-scope="scope">
+          <el-button size="mini" plain type="primary" icon="el-icon-edit" v-model="scope.row.id"></el-button>
+          <el-button size="mini" plain type="danger" icon="el-icon-delete" v-model="scope.row.id"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="warning"
+            icon="el-icon-check"
+            v-model="scope.row.role_name"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分功能栏 -->
     <el-pagination
-      :page-sizes="pagesizes"
+      @size-change="sizeChange"
+      @current-change="currentChange"
+      :page-sizes="[1, 2, 3, 4,5,6,7,8,9,10,20,30,40,50,60,70,80,90,100]"
       :page-size="reqdata.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
@@ -63,31 +76,11 @@ export default {
         pagenum: 1,
         pagesize: 5
       },
-      total: 0,
-      pagesizes: [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8,
-        9,
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100
-      ]
+      total: 0
     };
   },
   methods: {
+    // 更新列表请求
     userData() {
       this.$http({
         method: "get",
@@ -98,14 +91,25 @@ export default {
           Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res);
-
         const { data, meta } = res.data;
         if (meta.status === 200) {
           this.tableData = data.users;
           this.total = data.total;
         }
       });
+    },
+    searchUsers() {
+      this.userData();
+    },
+    // 页码翻页功能
+    currentChange(currentPage) {
+      this.reqdata.pagenum = currentPage;
+      this.userData();
+    },
+    // 自定义页容量功能
+    sizeChange(pageSize) {
+      this.reqdata.pagesize = pageSize;
+      this.userData();
     }
   },
   mounted() {

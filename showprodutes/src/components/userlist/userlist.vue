@@ -71,41 +71,41 @@
     ></el-pagination>
     <!-- 新增弹框按钮 -->
     <el-dialog title="新增用户" :visible.sync="dialogFormVisible" width="40%">
-      <el-form :model="form">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
+      <el-form :model="form" :rules="rules" ref="form">
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
           <el-input v-model="form.username" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码" :label-width="formLabelWidth">
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
           <el-input v-model="form.password" autocomplete="off" type="password"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="form.email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="电话" :label-width="formLabelWidth">
-          <el-input v-model="form.mobile" autocomplete="off"></el-input>
+        <el-form-item label="电话" :label-width="formLabelWidth" prop="mobile">
+          <el-input v-model.number="form.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
+        <el-button type="primary" @click="addUser('form')">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 修改用户信息 -->
     <el-dialog title="新增用户" :visible.sync="formVisible" width="40%">
-      <el-form :model="putdata">
-        <el-form-item label="用户名" :label-width="formLabelWidth">
-          <el-input v-model="putdata.username" autocomplete="off"></el-input>
+      <el-form :model="putdata" :rules="rules" ref="putdata">
+        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+          <el-input v-model="putdata.username" autocomplete="off" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="putdata.email" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="电话" :label-width="formLabelWidth">
-          <el-input v-model="putdata.mobile" autocomplete="off"></el-input>
+        <el-form-item label="电话" :label-width="formLabelWidth" prop="mobile">
+          <el-input v-model.number="putdata.mobile" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="formVisible = false">取 消</el-button>
-        <el-button type="primary" @click="putUser(putdata.id)">修 改</el-button>
+        <el-button type="primary" @click="putUser(putdata.id,'putdata')">修 改</el-button>
       </div>
     </el-dialog>
     <!-- 修改权限列表 -->
@@ -134,6 +134,32 @@
 export default {
   data() {
     return {
+      rules: {
+        username: [
+          { required: true, message: "请输入用户名", trigger: "blur" },
+          { min: 3, max: 18, message: "长度在 3 到 18 个字符", trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { min: 6, max: 18, message: "长度在 6 到 18 个字符", trigger: "blur" }
+        ],
+        mobile: [
+          {
+            required: false,
+            type: "number",
+            message: "电话号码必须为数字",
+            trigger: "blur"
+          }
+        ],
+        email: [
+          {
+            required: false,
+            message: "请输入正确的邮箱地址",
+            type: "email",
+            trigger: "blur"
+          }
+        ]
+      },
       form: {
         username: "",
         password: "",
@@ -176,11 +202,9 @@ export default {
           Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res);
-
         const { data, meta } = res.data;
         if (meta.status === 200) {
-          if (data.users.length === 0 && data.pagenum != 1) {
+          if (data.users.length === 0 && data.pagenum !== 1) {
             this.reqdata.pagenum--;
             this.userData();
             return;
@@ -205,23 +229,29 @@ export default {
       this.userData();
     },
     // 新增用户功能
-    addUser() {
-      this.$http({
-        method: "post",
-        url: "http://localhost:8888/api/private/v1/users/",
-        data: this.form,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
-      }).then(res => {
-        const { meta } = res.data;
-        if (meta.status === 201) {
-          this.userData();
-          this.dialogFormVisible = false;
-          this.$message({
-            type: "success",
-            message: "创建成功!"
+    addUser(form) {
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          this.$http({
+            method: "post",
+            url: "http://localhost:8888/api/private/v1/users/",
+            data: this.form,
+            headers: {
+              Authorization: window.localStorage.getItem("token")
+            }
+          }).then(res => {
+            const { meta } = res.data;
+            if (meta.status === 201) {
+              this.userData();
+              this.dialogFormVisible = false;
+              this.$message({
+                type: "success",
+                message: meta.msg
+              });
+            }
           });
+        } else {
+          this.$refs[form].resetFields();
         }
       });
     },
@@ -245,7 +275,7 @@ export default {
             this.userData();
             this.$message({
               type: "success",
-              message: "删除成功!"
+              message: meta.msg
             });
           }
         });
@@ -271,23 +301,29 @@ export default {
       });
     },
     // 修改用户数据功能
-    putUser(id) {
-      this.$http({
-        method: "put",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
-        data: this.putdata,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
-      }).then(res => {
-        const { meta } = res.data;
-        if (meta.status === 200) {
-          this.formVisible = false;
-          this.userData();
-          this.$message({
-            type: "success",
-            message: "修改成功！"
+    putUser(id, form) {
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          this.$http({
+            method: "put",
+            url: "http://localhost:8888/api/private/v1/users/" + id,
+            data: this.putdata,
+            headers: {
+              Authorization: window.localStorage.getItem("token")
+            }
+          }).then(res => {
+            const { meta } = res.data;
+            if (meta.status === 200) {
+              this.formVisible = false;
+              this.userData();
+              this.$message({
+                type: "success",
+                message: meta.msg
+              });
+            }
           });
+        } else {
+          this.$refs[form].resetFields();
         }
       });
     },

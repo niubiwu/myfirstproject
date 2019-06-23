@@ -113,12 +113,13 @@
       <el-form :model="putdata">
         <el-form-item label="当前用户" :label-width="formLabelWidth">{{putdata.username}}</el-form-item>
         <el-form-item label="请选择角色" :label-width="formLabelWidth">
-          <el-select v-model="putdata.rold_name" placeholder="请选择角色">
-            <el-option label="主管" value="zhuhuan"></el-option>
-            <el-option label="测试角色" value="ceshi1"></el-option>
-            <el-option label="测试角色2" value="ceshi2"></el-option>
-            <el-option label="超级管理员" value="shperadmin"></el-option>
-            <el-option label="test" value="test"></el-option>
+          <el-select v-model="putdata.rid" placeholder="请选择角色">
+            <el-option
+              v-for="item in rolelist"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -187,7 +188,8 @@ export default {
       dialogFormVisible: false,
       formLabelWidth: "90px",
       formVisible: false,
-      footFormVisible: false
+      footFormVisible: false,
+      rolelist: []
     };
   },
   methods: {
@@ -343,9 +345,23 @@ export default {
           this.footFormVisible = true;
           this.putdata = data;
           this.id = data.id;
+          //动态获取角色功能
+          this.$http({
+            method: "get",
+            url: `http://localhost:8888/api/private/v1/roles`,
+            headers: {
+              Authorization: window.localStorage.getItem("token")
+            }
+          }).then(res => {
+            console.log(res);
+
+            const { data, meta } = res.data;
+            this.rolelist = data;
+          });
         }
       });
     },
+
     // 修改权限功能
     putRoot(id) {
       this.$http({

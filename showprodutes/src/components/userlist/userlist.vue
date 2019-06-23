@@ -176,8 +176,15 @@ export default {
           Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
+        console.log(res);
+
         const { data, meta } = res.data;
         if (meta.status === 200) {
+          if (data.users.length === 0 && data.pagenum != 1) {
+            this.reqdata.pagenum--;
+            this.userData();
+            return;
+          }
           this.tableData = data.users;
           this.total = data.total;
         }
@@ -220,21 +227,28 @@ export default {
     },
     // 删除用户信息功能
     deleteUser(id) {
-      this.$http({
-        method: "delete",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
-      }).then(res => {
-        const meta = res.data.meta;
-        if (meta.status === 200) {
-          this.userData();
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-        }
+      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http({
+          method: "delete",
+          url: "http://localhost:8888/api/private/v1/users/" + id,
+          headers: {
+            Authorization: window.localStorage.getItem("token")
+          }
+        }).then(res => {
+          console.log(res);
+          const meta = res.data.meta;
+          if (meta.status === 200) {
+            this.userData();
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          }
+        });
       });
     },
     // 打开弹窗获得数据

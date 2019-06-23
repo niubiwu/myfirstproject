@@ -139,283 +139,285 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 18, message: "长度在 3 到 18 个字符", trigger: "blur" }
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 18, message: '长度在 3 到 18 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 18, message: "长度在 6 到 18 个字符", trigger: "blur" }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
         ],
         mobile: [
           {
             required: false,
-            type: "number",
-            message: "电话号码必须为数字",
-            trigger: "blur"
+            type: 'number',
+            message: '电话号码必须为数字',
+            trigger: 'blur'
           }
         ],
         email: [
           {
             required: false,
-            message: "请输入正确的邮箱地址",
-            type: "email",
-            trigger: "blur"
+            message: '请输入正确的邮箱地址',
+            type: 'email',
+            trigger: 'blur'
           }
         ]
       },
       form: {
-        username: "",
-        password: "",
-        email: "",
-        mobile: ""
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
       },
       tableData: [
         {
-          username: "",
-          email: "",
-          mobile: ""
+          username: '',
+          email: '',
+          mobile: ''
         }
       ],
       reqdata: {
-        query: "",
+        query: '',
         pagenum: 1,
         pagesize: 5
       },
       putdata: {
-        username: "",
-        email: "",
-        mobile: ""
+        username: '',
+        email: '',
+        mobile: ''
       },
       total: 0,
       dialogFormVisible: false,
-      formLabelWidth: "90px",
+      formLabelWidth: '90px',
       formVisible: false,
       footFormVisible: false,
       rolelist: []
-    };
+    }
   },
   methods: {
     // 更新列表请求
-    userData() {
+    userData () {
       this.$http({
-        method: "get",
+        method: 'get',
         url: `http://localhost:8888/api/private/v1/users?query=${
           this.reqdata.query
         }&pagenum=${this.reqdata.pagenum}&pagesize=${this.reqdata.pagesize}`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
           if (data.users.length === 0 && data.pagenum !== 1) {
-            this.reqdata.pagenum--;
-            this.userData();
-            return;
+            this.reqdata.pagenum--
+            this.userData()
+            return
           }
-          this.tableData = data.users;
-          this.total = data.total;
+          this.tableData = data.users
+          this.total = data.total
         }
-      });
+      })
     },
     // 搜索功能完成
-    searchUsers() {
-      this.userData();
+    searchUsers () {
+      this.userData()
     },
     // 页码翻页功能
-    currentChange(currentPage) {
-      this.reqdata.pagenum = currentPage;
-      this.userData();
+    currentChange (currentPage) {
+      this.reqdata.pagenum = currentPage
+      this.userData()
     },
     // 自定义页容量功能
-    sizeChange(pageSize) {
-      this.reqdata.pagesize = pageSize;
-      this.userData();
+    sizeChange (pageSize) {
+      this.reqdata.pagesize = pageSize
+      this.userData()
     },
     // 新增用户功能
-    addUser(form) {
+    addUser (form) {
       this.$refs[form].validate(valid => {
         if (valid) {
           this.$http({
-            method: "post",
-            url: "http://localhost:8888/api/private/v1/users/",
+            method: 'post',
+            url: 'http://localhost:8888/api/private/v1/users/',
             data: this.form,
             headers: {
-              Authorization: window.localStorage.getItem("token")
+              Authorization: window.localStorage.getItem('token')
             }
           }).then(res => {
-            const { meta } = res.data;
+            const { meta } = res.data
             if (meta.status === 201) {
-              this.userData();
-              this.dialogFormVisible = false;
+              this.userData()
+              this.dialogFormVisible = false
               this.$message({
-                type: "success",
+                type: 'success',
                 message: meta.msg
-              });
+              })
             }
-          });
+          })
         } else {
-          this.$refs[form].resetFields();
+          this.$refs[form].resetFields()
         }
-      });
+      })
     },
     // 删除用户信息功能
-    deleteUser(id) {
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    deleteUser (id) {
+      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         this.$http({
-          method: "delete",
-          url: "http://localhost:8888/api/private/v1/users/" + id,
+          method: 'delete',
+          url: 'http://localhost:8888/api/private/v1/users/' + id,
           headers: {
-            Authorization: window.localStorage.getItem("token")
+            Authorization: window.localStorage.getItem('token')
           }
         }).then(res => {
-          console.log(res);
-          const meta = res.data.meta;
+          console.log(res)
+          const meta = res.data.meta
           if (meta.status === 200) {
-            this.userData();
+            this.userData()
             this.$message({
-              type: "success",
+              type: 'success',
               message: meta.msg
-            });
+            })
           }
-        });
-      });
+        })
+      })
     },
     // 打开弹窗获得数据
-    getUser(id) {
+    getUser (id) {
       this.$http({
-        method: "get",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
+        method: 'get',
+        url: 'http://localhost:8888/api/private/v1/users/' + id,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        console.log(res);
+        console.log(res)
 
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.formVisible = true;
-          this.putdata = data;
-          this.id = data.id;
+          this.formVisible = true
+          this.putdata = data
+          this.id = data.id
         }
-      });
+      })
     },
     // 修改用户数据功能
-    putUser(id, form) {
+    putUser (id, form) {
       this.$refs[form].validate(valid => {
         if (valid) {
           this.$http({
-            method: "put",
-            url: "http://localhost:8888/api/private/v1/users/" + id,
+            method: 'put',
+            url: 'http://localhost:8888/api/private/v1/users/' + id,
             data: this.putdata,
             headers: {
-              Authorization: window.localStorage.getItem("token")
+              Authorization: window.localStorage.getItem('token')
             }
           }).then(res => {
-            const { meta } = res.data;
+            const { meta } = res.data
             if (meta.status === 200) {
-              this.formVisible = false;
-              this.userData();
+              this.formVisible = false
+              this.userData()
               this.$message({
-                type: "success",
+                type: 'success',
                 message: meta.msg
-              });
+              })
             }
-          });
+          })
         } else {
-          this.$refs[form].resetFields();
+          this.$refs[form].resetFields()
         }
-      });
+      })
     },
     // 获得数据功能
-    getUserFn(id) {
+    getUserFn (id) {
       this.$http({
-        method: "get",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
+        method: 'get',
+        url: 'http://localhost:8888/api/private/v1/users/' + id,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        console.log(res);
+        console.log(res)
 
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.footFormVisible = true;
-          this.putdata = data;
-          this.id = data.id;
-          //动态获取角色功能
+          this.footFormVisible = true
+          this.putdata = data
+          this.id = data.id
+          // 动态获取角色功能
           this.$http({
-            method: "get",
+            method: 'get',
             url: `http://localhost:8888/api/private/v1/roles`,
             headers: {
-              Authorization: window.localStorage.getItem("token")
+              Authorization: window.localStorage.getItem('token')
             }
           }).then(res => {
-            console.log(res);
+            console.log(res)
 
-            const { data, meta } = res.data;
-            this.rolelist = data;
-          });
+            const { data, meta } = res.data
+            if (meta.status === 200) {
+              this.rolelist = data
+            }
+          })
         }
-      });
+      })
     },
 
     // 修改权限功能
-    putRoot(id) {
+    putRoot (id) {
       this.$http({
-        method: "put",
-        url: "http://localhost:8888/api/private/v1/users/" + id + "/role",
+        method: 'put',
+        url: 'http://localhost:8888/api/private/v1/users/' + id + '/role',
         data: {
           rid: this.putdata.rid
         },
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        console.log(res);
-        const { data, meta } = res.data;
+        console.log(res)
+        const { meta } = res.data
         if (meta.status === 200) {
-          this.footFormVisible = false;
+          this.footFormVisible = false
           this.$message({
-            type: "success",
+            type: 'success',
             message: meta.msg
-          });
+          })
         } else {
-          this.$message.error(meta.msg);
+          this.$message.error(meta.msg)
         }
-      });
+      })
     },
     // 状态显示功能
-    putStatus(id, type) {
+    putStatus (id, type) {
       this.$http({
-        method: "put",
+        method: 'put',
         url: `http://localhost:8888/api/private/v1/users/${id}/state/${type}`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        const { meta } = res.data;
+        const { meta } = res.data
         if (meta.status === 200) {
           this.$message({
-            type: "success",
+            type: 'success',
             message: meta.msg
-          });
+          })
         }
-      });
+      })
     }
   },
-  mounted() {
-    this.userData();
+  mounted () {
+    this.userData()
   }
-};
+}
 </script>
 
 <style>

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import login from '@/components/login/login.vue'
 import index from '@/components/index/index.vue'
 import userlist from '@/components/userlist/userlist.vue'
+import rolelist from '@/components/rolelist/rolelist.vue'
 Vue.use(Router)
 
 export default new Router({
@@ -18,6 +19,10 @@ export default new Router({
       path: '/userlist',
       name: 'userlist',
       component: userlist
+    }, {
+      path: '/rolelist',
+      name: 'rolelist',
+      component: rolelist
     }]
   }]
 })

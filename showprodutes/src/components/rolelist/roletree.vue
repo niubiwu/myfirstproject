@@ -5,8 +5,8 @@
       <el-breadcrumb-item>权限管理</el-breadcrumb-item>
       <el-breadcrumb-item>角色列表</el-breadcrumb-item>
     </el-breadcrumb>
-    <el-button>添加角色</el-button>
-    <el-table :data="tableData" style="width: 100%;margin-top:15px;" :default-expand-all="true">
+    <el-button @click="dialogFormVisible = true">添加角色</el-button>
+    <el-table :data="tableData" style="width: 100%;margin-top:15px;">
       <el-table-column type="expand">
         <template slot-scope="scope">
           <el-row v-for="(item,index) in scope.row.children" :key="index">
@@ -54,18 +54,47 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 新增弹框按钮 -->
+    <el-dialog title="新增角色" :visible.sync="dialogFormVisible" width="40%">
+      <el-form :model="formData" :rules="rules" ref="formData">
+        <el-form-item label="角色名称" :label-width="formLabelWidth" prop="roleName">
+          <el-input v-model="formData.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" :label-width="formLabelWidth" prop="roleDesc">
+          <el-input v-model="formData.roleDesc" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addRole('formData')">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
-
 
 <script>
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      formData: {
+        roleName: "",
+        roleDesc: ""
+      },
+      rules: {
+        roleName: [
+          { required: true, message: "角色名称不能为空", trigger: "blur" }
+        ],
+        roleDesc: [
+          { required: true, message: "角色描述不能为空", trigger: "blur" }
+        ]
+      },
+      dialogFormVisible: false,
+      formLabelWidth: "90px"
     };
   },
   methods: {
+    // 获取角色权限数据
     getTreeData() {
       this.$http({
         method: "get",
@@ -79,6 +108,35 @@ export default {
         const { data, meta } = res.data;
         if (meta.status === 200) {
           this.tableData = data;
+        }
+      });
+    },
+    // 增加角色
+    addRole(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$http({
+            method: "post",
+            url: `http://localhost:8888/api/private/v1/roles`,
+            data: this.formData,
+            headers: {
+              Authorization: window.localStorage.getItem("token")
+            }
+          }).then(res => {
+            const { meta } = res.data;
+            if (meta.status === 201) {
+              this.dialogFormVisible = false;
+              this.getTreeData();
+              this.$message({
+                type: "success",
+                message: meta.msg
+              });
+            } else {
+              this.$message.error(meta.msg);
+            }
+          });
+        } else {
+          this.$refs[formName].resetFields();
         }
       });
     }

@@ -12,7 +12,7 @@
           <el-row v-for="(item,index) in scope.row.children" :key="index">
             <el-col :span="4">
               <div class="grid-content bg-purple">
-                <el-tag closable>{{item.authName}}</el-tag>
+                <el-tag closable @close="removePower(scope.row.id,item.id,scope)">{{item.authName}}</el-tag>
                 <i class="el-icon-arrow-right"></i>
               </div>
             </el-col>
@@ -22,7 +22,11 @@
                 v-for="(tag,each) in scope.row.children[index].children"
                 :key="each"
               >
-                <el-tag closable type="success">{{tag.authName}}</el-tag>
+                <el-tag
+                  closable
+                  type="success"
+                  @close="removePower(scope.row.id,tag.id,scope)"
+                >{{tag.authName}}</el-tag>
                 <i class="el-icon-arrow-right"></i>
               </div>
             </el-col>
@@ -37,6 +41,7 @@
                   type="warning"
                   v-for="(list,num) in scope.row.children[index].children[each].children"
                   :key="num"
+                  @close="removePower(scope.row.id,list.id,scope)"
                 >{{list.authName}}</el-tag>
               </div>
             </el-col>
@@ -137,6 +142,27 @@ export default {
           });
         } else {
           this.$refs[formName].resetFields();
+        }
+      });
+    },
+    // 移除角色权限操作
+    removePower(roleId, powerId, scope) {
+      this.$http({
+        method: "delete",
+        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights/${powerId}`,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        console.log(res);
+
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
+          scope.row.children = data;
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
         }
       });
     }

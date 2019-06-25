@@ -52,10 +52,22 @@
       <el-table-column label="角色名称" prop="roleName"></el-table-column>
       <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
       <el-table-column label="操作">
-        <template>
+        <template slot-scope="scope">
           <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
-          <el-button size="mini" plain type="danger" icon="el-icon-delete"></el-button>
-          <el-button size="mini" plain type="warning" icon="el-icon-check"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="danger"
+            icon="el-icon-delete"
+            @click="deleteRole(scope.row.id)"
+          ></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="warning"
+            icon="el-icon-check"
+            @click="openRoleData(scope.row.id,scope.row.children)"
+          ></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,6 +84,22 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="addRole('formData')">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 角色分配权限弹框 -->
+    <el-dialog title="分配角色" :visible.sync="dialogVisible" width="40%" @close="roleNodes=[]">
+      <el-tree
+        :data="powerData"
+        show-checkbox
+        node-key="id"
+        :props="defaultProps"
+        :default-expand-all="true"
+        :default-checked-keys="roleNodes"
+        ref="tree"
+      ></el-tree>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="allotPower(roleId)" v-model="roleId">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -94,8 +122,17 @@ export default {
           { required: true, message: "角色描述不能为空", trigger: "blur" }
         ]
       },
+      // 树状图数据源
+      powerData: [],
+      defaultProps: {
+        children: "children",
+        label: "authName"
+      },
+      roleNodes: [],
       dialogFormVisible: false,
-      formLabelWidth: "90px"
+      formLabelWidth: "90px",
+      dialogVisible: false,
+      roleId: 0
     };
   },
   methods: {
@@ -164,6 +201,92 @@ export default {
             message: meta.msg
           });
         }
+      });
+    },
+    // 渲染角色已经拥有的权限
+    openRoleData(id, rloepower) {
+      this.$http({
+        method: "get",
+        url: `http://localhost:8888/api/private/v1/rights/tree`,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
+          this.powerData = data;
+          rloepower.forEach(element => {
+            element.children.forEach(item => {
+              item.children.forEach(list => {
+                this.roleNodes.push(list.id);
+              });
+            });
+          });
+        }
+      });
+      this.dialogVisible = true;
+      this.roleId = id;
+    },
+    // 给角色分配权限功能
+    allotPower(roleId) {
+      //获取到被选中的数组，并将数组转化为用逗号隔开的字符串
+      // let halfarr = this.$refs.tree.getHalfCheckedKeys();
+      // let checkedarr = this.$refs.tree.getCheckedKeys(true);
+      let nodearr = this.$refs.tree.getCheckedNodes(false, true);
+      let checkedarr = [];
+      nodearr.forEach(item => {
+        checkedarr.push(item.id);
+      });
+      // console.log(checkedarr);
+      // let newStr = halfarr.concat(checkedarr).join(",");
+      // console.log(newStr);
+      let newStr = checkedarr.join(",");
+      this.$http({
+        method: "post",
+        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights`,
+        data: {
+          rids: newStr
+        },
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        const { meta } = res.data;
+        if (meta.status === 200) {
+          this.getTreeData();
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+          checkedarr = [];
+        }
+      });
+      this.dialogVisible = false;
+    },
+    // 删除角色
+    deleteRole(id) {
+      this.$confirm("此操作将删除当前角色, 是否继续?", "删除角色提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(() => {
+        this.$http({
+          method: "delete",
+          url: "http://localhost:8888/api/private/v1/roles/" + id,
+          headers: {
+            Authorization: window.localStorage.getItem("token")
+          }
+        }).then(res => {
+          console.log(res);
+          const meta = res.data.meta;
+          if (meta.status === 200) {
+            this.getTreeData();
+            this.$message({
+              type: "success",
+              message: meta.msg
+            });
+          }
+        });
       });
     }
   },

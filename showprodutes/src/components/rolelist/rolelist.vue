@@ -16,47 +16,47 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       roleData: []
-    }
+    };
   },
   methods: {
-    getRolesData () {
+    getRolesData() {
       this.$http({
-        method: 'get',
+        method: "get",
         url: `http://localhost:8888/api/private/v1/rights/list`,
         headers: {
-          Authorization: window.localStorage.getItem('token')
+          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
-        console.log(res)
+        console.log(res);
 
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.roleData = data
+          this.roleData = data;
         }
-      })
+      });
     },
-    formatter (row) {
+    formatter(row) {
       switch (row.level) {
-        case '0':
-          row.level = '一级'
-          break
-        case '1':
-          row.level = '二级'
-          break
-        case '2':
-          row.level = '三级'
-          break
+        case "0":
+          row.level = "一级";
+          break;
+        case "1":
+          row.level = "二级";
+          break;
+        case "2":
+          row.level = "三级";
+          break;
       }
-      return row.level
+      return row.level;
     }
   },
-  mounted () {
-    this.getRolesData()
+  mounted() {
+    this.getRolesData();
   }
-}
+};
 </script>
 
 <style>

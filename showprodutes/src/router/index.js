@@ -5,7 +5,8 @@ import index from '@/components/index/index.vue'
 import userlist from '@/components/userlist/userlist.vue'
 import rolelist from '@/components/rolelist/rolelist.vue'
 import roletree from '@/components/rolelist/roletree.vue'
-
+import commoditylist from "@/components/commodityList/commodityList.vue";
+import addgoods from "@/components/commodityList/addGoods.vue";
 Vue.use(Router)
 
 export default new Router({
@@ -29,6 +30,14 @@ export default new Router({
       path: '/roletree',
       name: 'roletree',
       component: roletree
+    }, {
+      path: '/commoditylist',
+      name: 'commoditylist',
+      component: commoditylist
+    }, {
+      path: '/commoditylist/addgoods',
+      name: 'addgoods',
+      component: addgoods
     }]
   }]
 })

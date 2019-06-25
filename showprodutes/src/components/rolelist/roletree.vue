@@ -53,7 +53,13 @@
       <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-edit"
+            @click="getIdRole(scope.row.id)"
+          ></el-button>
           <el-button
             size="mini"
             plain
@@ -102,198 +108,266 @@
         <el-button type="primary" @click="allotPower(roleId)" v-model="roleId">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 修改弹框按钮 -->
+    <el-dialog title="修改角色" :visible.sync="formVisible" width="40%">
+      <el-form :model="formDataEait" :rules="rules" ref="formDataEait">
+        <el-form-item label="角色名称" :label-width="formLabelWidth" prop="roleName">
+          <el-input v-model="formDataEait.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" :label-width="formLabelWidth" prop="roleDesc">
+          <el-input v-model="formDataEait.roleDesc" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="formVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editRole('formDataEait')">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       tableData: [],
       formData: {
-        roleName: "",
-        roleDesc: ""
+        roleName: '',
+        roleDesc: ''
+      },
+      formDataEait: {
+        roleName: '',
+        roleDesc: ''
       },
       rules: {
         roleName: [
-          { required: true, message: "角色名称不能为空", trigger: "blur" }
+          { required: true, message: '角色名称不能为空', trigger: 'blur' }
         ],
         roleDesc: [
-          { required: true, message: "角色描述不能为空", trigger: "blur" }
+          { required: true, message: '角色描述不能为空', trigger: 'blur' }
         ]
       },
       // 树状图数据源
       powerData: [],
       defaultProps: {
-        children: "children",
-        label: "authName"
+        children: 'children',
+        label: 'authName'
       },
       roleNodes: [],
       dialogFormVisible: false,
-      formLabelWidth: "90px",
+      formVisible: false,
+      formLabelWidth: '90px',
       dialogVisible: false,
       roleId: 0
-    };
+    }
   },
   methods: {
     // 获取角色权限数据
-    getTreeData() {
+    getTreeData () {
       this.$http({
-        method: "get",
+        method: 'get',
         url: `http://localhost:8888/api/private/v1/roles`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        console.log(res);
+        console.log(res)
 
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.tableData = data;
+          this.tableData = data
         }
-      });
+      })
     },
     // 增加角色
-    addRole(formName) {
+    addRole (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.$http({
-            method: "post",
+            method: 'post',
             url: `http://localhost:8888/api/private/v1/roles`,
             data: this.formData,
             headers: {
-              Authorization: window.localStorage.getItem("token")
+              Authorization: window.localStorage.getItem('token')
             }
           }).then(res => {
-            const { meta } = res.data;
+            const { meta } = res.data
             if (meta.status === 201) {
-              this.dialogFormVisible = false;
-              this.getTreeData();
+              this.dialogFormVisible = false
+              this.getTreeData()
+              this.formData.roleName = ''
+              this.fromData.roleDesc = ''
               this.$message({
-                type: "success",
+                type: 'success',
                 message: meta.msg
-              });
+              })
             } else {
-              this.$message.error(meta.msg);
+              this.$message.error(meta.msg)
             }
-          });
+          })
         } else {
-          this.$refs[formName].resetFields();
+          this.$refs[formName].resetFields()
         }
-      });
+      })
     },
     // 移除角色权限操作
-    removePower(roleId, powerId, scope) {
+    removePower (roleId, powerId, scope) {
       this.$http({
-        method: "delete",
+        method: 'delete',
         url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights/${powerId}`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        console.log(res);
+        console.log(res)
 
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          scope.row.children = data;
+          scope.row.children = data
           this.$message({
-            type: "success",
+            type: 'success',
             message: meta.msg
-          });
+          })
         }
-      });
+      })
     },
     // 渲染角色已经拥有的权限
-    openRoleData(id, rloepower) {
+    openRoleData (id, rloepower) {
       this.$http({
-        method: "get",
+        method: 'get',
         url: `http://localhost:8888/api/private/v1/rights/tree`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.powerData = data;
+          this.powerData = data
           rloepower.forEach(element => {
             element.children.forEach(item => {
               item.children.forEach(list => {
-                this.roleNodes.push(list.id);
-              });
-            });
-          });
+                this.roleNodes.push(list.id)
+              })
+            })
+          })
         }
-      });
-      this.dialogVisible = true;
-      this.roleId = id;
+      })
+      this.dialogVisible = true
+      this.roleId = id
     },
     // 给角色分配权限功能
-    allotPower(roleId) {
-      //获取到被选中的数组，并将数组转化为用逗号隔开的字符串
+    allotPower (roleId) {
+      // 获取到被选中的数组，并将数组转化为用逗号隔开的字符串
       // let halfarr = this.$refs.tree.getHalfCheckedKeys();
       // let checkedarr = this.$refs.tree.getCheckedKeys(true);
-      let nodearr = this.$refs.tree.getCheckedNodes(false, true);
-      let checkedarr = [];
+      let nodearr = this.$refs.tree.getCheckedNodes(false, true)
+      let checkedarr = []
       nodearr.forEach(item => {
-        checkedarr.push(item.id);
-      });
+        checkedarr.push(item.id)
+      })
       // console.log(checkedarr);
       // let newStr = halfarr.concat(checkedarr).join(",");
       // console.log(newStr);
-      let newStr = checkedarr.join(",");
+      let newStr = checkedarr.join(',')
       this.$http({
-        method: "post",
+        method: 'post',
         url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights`,
         data: {
           rids: newStr
         },
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        const { meta } = res.data;
+        const { meta } = res.data
         if (meta.status === 200) {
-          this.getTreeData();
+          this.getTreeData()
           this.$message({
-            type: "success",
+            type: 'success',
             message: meta.msg
-          });
-          checkedarr = [];
+          })
+          checkedarr = []
         }
-      });
-      this.dialogVisible = false;
+      })
+      this.dialogVisible = false
     },
     // 删除角色
-    deleteRole(id) {
-      this.$confirm("此操作将删除当前角色, 是否继续?", "删除角色提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    deleteRole (id) {
+      this.$confirm('此操作将删除当前角色, 是否继续?', '删除角色提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         this.$http({
-          method: "delete",
-          url: "http://localhost:8888/api/private/v1/roles/" + id,
+          method: 'delete',
+          url: 'http://localhost:8888/api/private/v1/roles/' + id,
           headers: {
-            Authorization: window.localStorage.getItem("token")
+            Authorization: window.localStorage.getItem('token')
           }
         }).then(res => {
-          console.log(res);
-          const meta = res.data.meta;
+          console.log(res)
+          const meta = res.data.meta
           if (meta.status === 200) {
-            this.getTreeData();
+            this.getTreeData()
             this.$message({
-              type: "success",
+              type: 'success',
               message: meta.msg
-            });
+            })
           }
-        });
-      });
+        })
+      })
+    },
+    // 根据id查找数据
+    getIdRole (id) {
+      this.$http({
+        method: 'get',
+        url: `http://localhost:8888/api/private/v1/roles/${id}`,
+        headers: {
+          Authorization: window.localStorage.getItem('token')
+        }
+      }).then(res => {
+        const { data, meta } = res.data
+        if (meta.status === 200) {
+          this.formDataEait = data
+          this.roleId = id
+        }
+      })
+      this.formVisible = true
+    },
+    // 修改角色信息
+    editRole (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$http({
+            method: 'put',
+            url: `http://localhost:8888/api/private/v1/roles/${this.roleId}`,
+            data: this.formDataEait,
+            headers: {
+              Authorization: window.localStorage.getItem('token')
+            }
+          }).then(res => {
+            const { meta } = res.data
+            if (meta.status === 200) {
+              this.formVisible = false
+              this.getTreeData()
+              this.$message({
+                type: 'success',
+                message: meta.msg
+              })
+            } else {
+              this.$message.error(meta.msg)
+            }
+          })
+        } else {
+          this.$refs[formName].resetFields()
+        }
+      })
     }
   },
-  mounted() {
-    this.getTreeData();
+  mounted () {
+    this.getTreeData()
   }
-};
+}
 </script>
 
 <style>

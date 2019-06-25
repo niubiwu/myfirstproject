@@ -31,7 +31,12 @@
       <el-table-column prop="mobile" label="电话"></el-table-column>
       <el-table-column label="用户状态" width="80">
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+            @change="putStatus(scope.row.id,scope.row.mg_state)"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
@@ -91,7 +96,7 @@
       </div>
     </el-dialog>
     <!-- 修改用户信息 -->
-    <el-dialog title="新增用户" :visible.sync="formVisible" width="40%">
+    <el-dialog title="修改用户" :visible.sync="formVisible" width="40%">
       <el-form :model="putdata" :rules="rules" ref="putdata">
         <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
           <el-input v-model="putdata.username" autocomplete="off" :disabled="true"></el-input>
@@ -109,11 +114,12 @@
       </div>
     </el-dialog>
     <!-- 修改权限列表 -->
-    <el-dialog title="新增用户" :visible.sync="footFormVisible" width="40%">
+    <el-dialog title="分配角色" :visible.sync="footFormVisible" width="40%">
       <el-form :model="putdata">
         <el-form-item label="当前用户" :label-width="formLabelWidth">{{putdata.username}}</el-form-item>
         <el-form-item label="请选择角色" :label-width="formLabelWidth">
           <el-select v-model="putdata.rid" placeholder="请选择角色">
+            <el-option label="请选择角色" :value="-1"></el-option>
             <el-option
               v-for="item in rolelist"
               :key="item.id"
@@ -345,7 +351,7 @@ export default {
           this.footFormVisible = true;
           this.putdata = data;
           this.id = data.id;
-          //动态获取角色功能
+          // 动态获取角色功能
           this.$http({
             method: "get",
             url: `http://localhost:8888/api/private/v1/roles`,
@@ -356,7 +362,9 @@ export default {
             console.log(res);
 
             const { data, meta } = res.data;
-            this.rolelist = data;
+            if (meta.status === 200) {
+              this.rolelist = data;
+            }
           });
         }
       });
@@ -366,15 +374,43 @@ export default {
     putRoot(id) {
       this.$http({
         method: "put",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
+        url: "http://localhost:8888/api/private/v1/users/" + id + "/role",
         data: {
-          rid: this.putdata.rold_name
+          rid: this.putdata.rid
         },
         headers: {
           Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
         console.log(res);
+        const { meta } = res.data;
+        if (meta.status === 200) {
+          this.footFormVisible = false;
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+        } else {
+          this.$message.error(meta.msg);
+        }
+      });
+    },
+    // 状态显示功能
+    putStatus(id, type) {
+      this.$http({
+        method: "put",
+        url: `http://localhost:8888/api/private/v1/users/${id}/state/${type}`,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        const { meta } = res.data;
+        if (meta.status === 200) {
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+        }
       });
     }
   },

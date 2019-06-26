@@ -55,95 +55,95 @@
 
 <script>
 // 导入面包屑组件
-import breadcrumb from "../layout/breadcrumb";
+import breadcrumb from '../layout/breadcrumb'
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data() {
+  data () {
     return {
       tableData: [],
       reqData: {
-        query: "",
+        query: '',
         pagenum: 1,
         pagesize: 10
       },
       total: 0
-    };
+    }
   },
   methods: {
     // 获取商品列表数据
-    getGoodsData() {
+    getGoodsData () {
       this.$http({
-        method: "get",
+        method: 'get',
         url: `http://localhost:8888/api/private/v1/goods?query=${
           this.reqData.query
         }&pagenum=${this.reqData.pagenum}&pagesize=${this.reqData.pagesize}`,
         headers: {
-          Authorization: window.localStorage.getItem("token")
+          Authorization: window.localStorage.getItem('token')
         }
       }).then(res => {
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
           if (data.goods.length === 0 && data.pagenum !== 1) {
-            this.pagenum--;
-            this.getGoodsData();
-            return;
+            this.pagenum--
+            this.getGoodsData()
+            return
           }
-          this.tableData = data.goods;
-          this.total = data.total;
+          this.tableData = data.goods
+          this.total = data.total
         }
-      });
+      })
     },
     // 调整页码显示的数量
-    handleSizeChange(pageSize) {
-      this.reqData.pagesize = pageSize;
-      this.getGoodsData();
+    handleSizeChange (pageSize) {
+      this.reqData.pagesize = pageSize
+      this.getGoodsData()
     },
     // 改变页面的页码改变内容
-    handleCurrentChange(current) {
-      this.reqData.pagenum = current;
-      this.getGoodsData();
+    handleCurrentChange (current) {
+      this.reqData.pagenum = current
+      this.getGoodsData()
     },
     // 关键字搜索商品
-    searchGoods() {
-      this.getGoodsData();
+    searchGoods () {
+      this.getGoodsData()
     },
-    //新增列表
-    addGood() {
-      this.$router.push("/commoditylist/addGoods");
+    // 新增列表
+    addGood () {
+      this.$router.push('/commoditylist/addGoods')
     },
     // 删除商品数据
-    deleteGoods(id) {
-      this.$confirm("此操作将删除该商品信息, 是否继续?", "温馨提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    deleteGoods (id) {
+      this.$confirm('此操作将删除该商品信息, 是否继续?', '温馨提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         this.$http({
-          method: "delete",
-          url: "http://localhost:8888/api/private/v1/goods/" + id,
+          method: 'delete',
+          url: 'http://localhost:8888/api/private/v1/goods/' + id,
           headers: {
-            Authorization: window.localStorage.getItem("token")
+            Authorization: window.localStorage.getItem('token')
           }
         }).then(res => {
-          console.log(res);
-          const meta = res.data.meta;
+          console.log(res)
+          const meta = res.data.meta
           if (meta.status === 200) {
-            this.getGoodsData();
+            this.getGoodsData()
             this.$message({
-              type: "success",
+              type: 'success',
               message: meta.msg
-            });
+            })
           }
-        });
-      });
+        })
+      })
     }
   },
-  mounted() {
-    this.getGoodsData();
+  mounted () {
+    this.getGoodsData()
   }
-};
+}
 </script>
 
 <style>

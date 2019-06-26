@@ -19,20 +19,20 @@
 
 <script>
 // 导入面包屑组件
-import breadcrumb from "../layout/breadcrumb";
+import breadcrumb from '../layout/breadcrumb'
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data() {
+  data () {
     return {
       active: 0
-    };
+    }
   },
   methods: {
-    tabClick() {}
+    tabClick () {}
   }
-};
+}
 </script>
 
 <style>

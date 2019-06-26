@@ -13,49 +13,49 @@
 
 <script>
 // 导入面包屑组件
-import breadcrumb from "../layout/breadcrumb";
+import breadcrumb from '../layout/breadcrumb'
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data() {
+  data () {
     return {
       roleData: []
-    };
-  },
-  methods: {
-    getRolesData() {
-      this.$http({
-        method: "get",
-        url: `rights/list`
-      }).then(res => {
-        console.log(res);
-
-        const { data, meta } = res.data;
-        if (meta.status === 200) {
-          this.roleData = data;
-        }
-      });
-    },
-    formatter(row) {
-      switch (row.level) {
-        case "0":
-          row.level = "一级";
-          break;
-        case "1":
-          row.level = "二级";
-          break;
-        case "2":
-          row.level = "三级";
-          break;
-      }
-      return row.level;
     }
   },
-  mounted() {
-    this.getRolesData();
+  methods: {
+    getRolesData () {
+      this.$http({
+        method: 'get',
+        url: `rights/list`
+      }).then(res => {
+        console.log(res)
+
+        const { data, meta } = res.data
+        if (meta.status === 200) {
+          this.roleData = data
+        }
+      })
+    },
+    formatter (row) {
+      switch (row.level) {
+        case '0':
+          row.level = '一级'
+          break
+        case '1':
+          row.level = '二级'
+          break
+        case '2':
+          row.level = '三级'
+          break
+      }
+      return row.level
+    }
+  },
+  mounted () {
+    this.getRolesData()
   }
-};
+}
 </script>
 
 <style>

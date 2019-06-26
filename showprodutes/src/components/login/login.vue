@@ -27,54 +27,54 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
-      labelPosition: "top",
+      labelPosition: 'top',
       ruleForm: {
-        username: "",
-        password: ""
+        username: '',
+        password: ''
       },
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 18, message: "长度在 3 到 18 个字符", trigger: "blur" }
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 18, message: '长度在 3 到 18 个字符', trigger: 'blur' }
         ],
         password: [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 18, message: "长度在 6 到 18 个字符", trigger: "blur" }
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 6, max: 18, message: '长度在 6 到 18 个字符', trigger: 'blur' }
         ]
       }
-    };
+    }
   },
   methods: {
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.$http({
-            method: "post",
-            url: "login",
+            method: 'post',
+            url: 'login',
             data: this.ruleForm
           }).then(res => {
-            console.log(res);
-            const { meta, data } = res.data;
+            console.log(res)
+            const { meta, data } = res.data
             if (meta.status === 200) {
-              window.localStorage.setItem("token", data.token);
-              this.$router.push("/");
+              window.localStorage.setItem('token', data.token)
+              this.$router.push('/')
               this.$message({
-                message: "欢迎来到黑马电商管理平台",
-                type: "success"
-              });
+                message: '欢迎来到黑马电商管理平台',
+                type: 'success'
+              })
             } else {
-              this.$message.error("错了哦,您输入的用户名或密码有误");
+              this.$message.error('错了哦,您输入的用户名或密码有误')
             }
-          });
+          })
         } else {
-          this.$refs[formName].resetFields();
+          this.$refs[formName].resetFields()
         }
-      });
+      })
     }
   }
-};
+}
 </script>
 
 <style scope>

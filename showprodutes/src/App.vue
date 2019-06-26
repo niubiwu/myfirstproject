@@ -5,11 +5,7 @@
 </template>
 
 <script>
-export default {
-  mounted () {
-    this.$router.push('/login')
-  }
-}
+export default {};
 </script>
 
 <style>

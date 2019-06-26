@@ -35,7 +35,7 @@
         <i class="el-icon-location"></i>
         <span>商品管理</span>
       </template>
-      <el-menu-item index="3-1">
+      <el-menu-item index="/commoditylist">
         <i class="el-icon-menu"></i>
         <span slot="title">商品列表</span>
       </el-menu-item>
@@ -43,7 +43,7 @@
         <i class="el-icon-menu"></i>
         <span slot="title">分类参数</span>
       </el-menu-item>
-      <el-menu-item index="3-3">
+      <el-menu-item index="/sortlist">
         <i class="el-icon-menu"></i>
         <span slot="title">商品分类</span>
       </el-menu-item>
@@ -74,7 +74,7 @@
 <script>
 export default {
   methods: {}
-}
+};
 </script>
 
 <style>

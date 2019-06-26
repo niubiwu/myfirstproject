@@ -1,10 +1,7 @@
 <template>
   <el-card class="rolelist">
-    <el-breadcrumb separator-class="el-icon-arrow-right" style="margin-bottom:15px;">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>角色列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <!-- 面包导航组件 -->
+    <breadcrumb oneName="权限管理" twoName="角色列表"></breadcrumb>
     <el-button @click="dialogFormVisible = true">添加角色</el-button>
     <el-table :data="tableData" style="width: 100%;margin-top:15px;">
       <el-table-column type="expand">
@@ -53,7 +50,13 @@
       <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+          <el-button
+            size="mini"
+            plain
+            type="primary"
+            icon="el-icon-edit"
+            @click="getIdRole(scope.row.id)"
+          ></el-button>
           <el-button
             size="mini"
             plain
@@ -102,15 +105,38 @@
         <el-button type="primary" @click="allotPower(roleId)" v-model="roleId">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 修改弹框按钮 -->
+    <el-dialog title="修改角色" :visible.sync="formVisible" width="40%">
+      <el-form :model="formDataEait" :rules="rules" ref="formDataEait">
+        <el-form-item label="角色名称" :label-width="formLabelWidth" prop="roleName">
+          <el-input v-model="formDataEait.roleName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述" :label-width="formLabelWidth" prop="roleDesc">
+          <el-input v-model="formDataEait.roleDesc" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="formVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editRole('formDataEait')">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
+import breadcrumb from "../layout/breadcrumb";
 export default {
+  components: {
+    breadcrumb: breadcrumb
+  },
   data() {
     return {
       tableData: [],
       formData: {
+        roleName: "",
+        roleDesc: ""
+      },
+      formDataEait: {
         roleName: "",
         roleDesc: ""
       },
@@ -130,6 +156,7 @@ export default {
       },
       roleNodes: [],
       dialogFormVisible: false,
+      formVisible: false,
       formLabelWidth: "90px",
       dialogVisible: false,
       roleId: 0
@@ -140,10 +167,7 @@ export default {
     getTreeData() {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/roles`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `roles`
       }).then(res => {
         console.log(res);
 
@@ -159,16 +183,15 @@ export default {
         if (valid) {
           this.$http({
             method: "post",
-            url: `http://localhost:8888/api/private/v1/roles`,
-            data: this.formData,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: `roles`,
+            data: this.formData
           }).then(res => {
             const { meta } = res.data;
             if (meta.status === 201) {
               this.dialogFormVisible = false;
               this.getTreeData();
+              this.formData.roleName = "";
+              this.fromData.roleDesc = "";
               this.$message({
                 type: "success",
                 message: meta.msg
@@ -186,10 +209,7 @@ export default {
     removePower(roleId, powerId, scope) {
       this.$http({
         method: "delete",
-        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights/${powerId}`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `roles/${roleId}/rights/${powerId}`
       }).then(res => {
         console.log(res);
 
@@ -207,10 +227,7 @@ export default {
     openRoleData(id, rloepower) {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/rights/tree`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `rights/tree`
       }).then(res => {
         const { data, meta } = res.data;
         if (meta.status === 200) {
@@ -229,7 +246,7 @@ export default {
     },
     // 给角色分配权限功能
     allotPower(roleId) {
-      //获取到被选中的数组，并将数组转化为用逗号隔开的字符串
+      // 获取到被选中的数组，并将数组转化为用逗号隔开的字符串
       // let halfarr = this.$refs.tree.getHalfCheckedKeys();
       // let checkedarr = this.$refs.tree.getCheckedKeys(true);
       let nodearr = this.$refs.tree.getCheckedNodes(false, true);
@@ -243,12 +260,9 @@ export default {
       let newStr = checkedarr.join(",");
       this.$http({
         method: "post",
-        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights`,
+        url: `roles/${roleId}/rights`,
         data: {
           rids: newStr
-        },
-        headers: {
-          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
         const { meta } = res.data;
@@ -272,10 +286,7 @@ export default {
       }).then(() => {
         this.$http({
           method: "delete",
-          url: "http://localhost:8888/api/private/v1/roles/" + id,
-          headers: {
-            Authorization: window.localStorage.getItem("token")
-          }
+          url: "roles/" + id
         }).then(res => {
           console.log(res);
           const meta = res.data.meta;
@@ -287,6 +298,46 @@ export default {
             });
           }
         });
+      });
+    },
+    // 根据id查找数据
+    getIdRole(id) {
+      this.$http({
+        method: "get",
+        url: `roles/${id}`
+      }).then(res => {
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
+          this.formDataEait = data;
+          this.roleId = id;
+        }
+      });
+      this.formVisible = true;
+    },
+    // 修改角色信息
+    editRole(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$http({
+            method: "put",
+            url: `roles/${this.roleId}`,
+            data: this.formDataEait
+          }).then(res => {
+            const { meta } = res.data;
+            if (meta.status === 200) {
+              this.formVisible = false;
+              this.getTreeData();
+              this.$message({
+                type: "success",
+                message: meta.msg
+              });
+            } else {
+              this.$message.error(meta.msg);
+            }
+          });
+        } else {
+          this.$refs[formName].resetFields();
+        }
       });
     }
   },

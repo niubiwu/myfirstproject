@@ -1,11 +1,7 @@
 <template>
   <el-card class="userlist">
     <!-- 面包屑导航 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-      <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <breadcrumb oneName="用户管理" twoName="用户列表"></breadcrumb>
     <!-- 搜索框与新增按钮 -->
     <el-row style="margin-top:15px;margin-bottom:15px;">
       <el-col :span="6">
@@ -138,7 +134,12 @@
 </template>
 
 <script>
+// 导入面包屑组件
+import breadcrumb from "../layout/breadcrumb";
 export default {
+  components: {
+    breadcrumb: breadcrumb
+  },
   data() {
     return {
       rules: {
@@ -203,12 +204,9 @@ export default {
     userData() {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/users?query=${
-          this.reqdata.query
-        }&pagenum=${this.reqdata.pagenum}&pagesize=${this.reqdata.pagesize}`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `users?query=${this.reqdata.query}&pagenum=${
+          this.reqdata.pagenum
+        }&pagesize=${this.reqdata.pagesize}`
       }).then(res => {
         const { data, meta } = res.data;
         if (meta.status === 200) {
@@ -242,11 +240,8 @@ export default {
         if (valid) {
           this.$http({
             method: "post",
-            url: "http://localhost:8888/api/private/v1/users/",
-            data: this.form,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: "users/",
+            data: this.form
           }).then(res => {
             const { meta } = res.data;
             if (meta.status === 201) {
@@ -272,7 +267,7 @@ export default {
       }).then(() => {
         this.$http({
           method: "delete",
-          url: "http://localhost:8888/api/private/v1/users/" + id,
+          url: "users/" + id,
           headers: {
             Authorization: window.localStorage.getItem("token")
           }
@@ -293,10 +288,7 @@ export default {
     getUser(id) {
       this.$http({
         method: "get",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: "users/" + id
       }).then(res => {
         console.log(res);
 
@@ -314,11 +306,8 @@ export default {
         if (valid) {
           this.$http({
             method: "put",
-            url: "http://localhost:8888/api/private/v1/users/" + id,
-            data: this.putdata,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: "users/" + id,
+            data: this.putdata
           }).then(res => {
             const { meta } = res.data;
             if (meta.status === 200) {
@@ -339,10 +328,7 @@ export default {
     getUserFn(id) {
       this.$http({
         method: "get",
-        url: "http://localhost:8888/api/private/v1/users/" + id,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: "users/" + id
       }).then(res => {
         console.log(res);
 
@@ -354,10 +340,7 @@ export default {
           // 动态获取角色功能
           this.$http({
             method: "get",
-            url: `http://localhost:8888/api/private/v1/roles`,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: `roles`
           }).then(res => {
             console.log(res);
 
@@ -374,12 +357,9 @@ export default {
     putRoot(id) {
       this.$http({
         method: "put",
-        url: "http://localhost:8888/api/private/v1/users/" + id + "/role",
+        url: "users/" + id + "/role",
         data: {
           rid: this.putdata.rid
-        },
-        headers: {
-          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
         console.log(res);
@@ -399,10 +379,7 @@ export default {
     putStatus(id, type) {
       this.$http({
         method: "put",
-        url: `http://localhost:8888/api/private/v1/users/${id}/state/${type}`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `users/${id}/state/${type}`
       }).then(res => {
         const { meta } = res.data;
         if (meta.status === 200) {

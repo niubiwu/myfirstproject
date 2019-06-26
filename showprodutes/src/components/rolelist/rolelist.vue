@@ -1,10 +1,7 @@
 <template>
   <el-card class="rolelist">
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-      <el-breadcrumb-item>权限列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <!-- 面包屑导航 -->
+    <breadcrumb oneName="权限管理" twoName="权限列表"></breadcrumb>
     <el-table :data="roleData" border style="width:640px;margin-top:15px">
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="authName" label="权限名称" width="150"></el-table-column>
@@ -15,7 +12,12 @@
 </template>
 
 <script>
+// 导入面包屑组件
+import breadcrumb from "../layout/breadcrumb";
 export default {
+  components: {
+    breadcrumb: breadcrumb
+  },
   data() {
     return {
       roleData: []
@@ -25,10 +27,7 @@ export default {
     getRolesData() {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/rights/list`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `rights/list`
       }).then(res => {
         console.log(res);
 

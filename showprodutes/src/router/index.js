@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+// 单独引用Message提示
+import {
+  Message
+} from 'element-ui';
 import login from '@/components/login/login.vue'
 import index from '@/components/index/index.vue'
 import userlist from '@/components/userlist/userlist.vue'
@@ -52,6 +56,10 @@ router.beforeEach((to, from, next) => {
     if (!token) {
       router.push({
         name: 'login'
+      })
+      Message({
+        message: '请您先登录',
+        type: 'warning'
       })
     } else {
       next()

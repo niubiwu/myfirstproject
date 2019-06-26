@@ -167,10 +167,7 @@ export default {
     getTreeData() {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/roles`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `roles`
       }).then(res => {
         console.log(res);
 
@@ -186,11 +183,8 @@ export default {
         if (valid) {
           this.$http({
             method: "post",
-            url: `http://localhost:8888/api/private/v1/roles`,
-            data: this.formData,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: `roles`,
+            data: this.formData
           }).then(res => {
             const { meta } = res.data;
             if (meta.status === 201) {
@@ -215,10 +209,7 @@ export default {
     removePower(roleId, powerId, scope) {
       this.$http({
         method: "delete",
-        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights/${powerId}`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `roles/${roleId}/rights/${powerId}`
       }).then(res => {
         console.log(res);
 
@@ -236,10 +227,7 @@ export default {
     openRoleData(id, rloepower) {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/rights/tree`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `rights/tree`
       }).then(res => {
         const { data, meta } = res.data;
         if (meta.status === 200) {
@@ -272,12 +260,9 @@ export default {
       let newStr = checkedarr.join(",");
       this.$http({
         method: "post",
-        url: `http://localhost:8888/api/private/v1/roles/${roleId}/rights`,
+        url: `roles/${roleId}/rights`,
         data: {
           rids: newStr
-        },
-        headers: {
-          Authorization: window.localStorage.getItem("token")
         }
       }).then(res => {
         const { meta } = res.data;
@@ -301,10 +286,7 @@ export default {
       }).then(() => {
         this.$http({
           method: "delete",
-          url: "http://localhost:8888/api/private/v1/roles/" + id,
-          headers: {
-            Authorization: window.localStorage.getItem("token")
-          }
+          url: "roles/" + id
         }).then(res => {
           console.log(res);
           const meta = res.data.meta;
@@ -322,10 +304,7 @@ export default {
     getIdRole(id) {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/roles/${id}`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `roles/${id}`
       }).then(res => {
         const { data, meta } = res.data;
         if (meta.status === 200) {
@@ -341,11 +320,8 @@ export default {
         if (valid) {
           this.$http({
             method: "put",
-            url: `http://localhost:8888/api/private/v1/roles/${this.roleId}`,
-            data: this.formDataEait,
-            headers: {
-              Authorization: window.localStorage.getItem("token")
-            }
+            url: `roles/${this.roleId}`,
+            data: this.formDataEait
           }).then(res => {
             const { meta } = res.data;
             if (meta.status === 200) {

@@ -52,7 +52,7 @@ export default {
         if (valid) {
           this.$http({
             method: "post",
-            url: "http://localhost:8888/api/private/v1/login",
+            url: "login",
             data: this.ruleForm
           }).then(res => {
             console.log(res);

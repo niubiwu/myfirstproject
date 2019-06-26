@@ -27,10 +27,7 @@ export default {
     getRolesData() {
       this.$http({
         method: "get",
-        url: `http://localhost:8888/api/private/v1/rights/list`,
-        headers: {
-          Authorization: window.localStorage.getItem("token")
-        }
+        url: `rights/list`
       }).then(res => {
         console.log(res);
 

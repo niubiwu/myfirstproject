@@ -10,14 +10,17 @@ import ElementUI from 'element-ui'
 import './assets/css/index.css'
 // 导入element.css文件
 import 'element-ui/lib/theme-chalk/index.css'
+//引入element-tree-grid插件
+import ElTreeGrid from 'element-tree-grid';
 
-Vue.config.productionTip = false
 // 使用element-ui
 Vue.use(ElementUI)
 // 使用插件
 Vue.use(myaxios)
-
+// 注册全局组件
+Vue.component(ElTreeGrid.name, ElTreeGrid);
 /* eslint-disable no-new */
+Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,

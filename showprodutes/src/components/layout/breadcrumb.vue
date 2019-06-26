@@ -8,8 +8,8 @@
 
 <script>
 export default {
-  props: ["oneName", "twoName"]
-};
+  props: ['oneName', 'twoName']
+}
 </script>
 
 <style>

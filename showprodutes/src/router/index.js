@@ -24,30 +24,33 @@ let router = new Router({
     name: 'index',
     component: index,
     children: [{
-      path: '/userlist',
+      path: 'users',
       name: 'userlist',
       component: userlist
     }, {
-      path: '/rolelist',
+      path: 'rights',
       name: 'rolelist',
       component: rolelist
     }, {
-      path: '/roletree',
+      path: 'roles',
       name: 'roletree',
       component: roletree
     }, {
-      path: '/commoditylist',
+      path: 'goods',
       name: 'commoditylist',
       component: commoditylist
-    }, {
-      path: '/commoditylist/addgoods',
+    },
+    {
+      path: '/addgoods',
       name: 'addgoods',
       component: addgoods
-    }, {
-      path: '/sortlist',
+    },
+    {
+      path: 'categories',
       name: 'sortlist',
       component: sortlist
-    }]
+    }
+    ]
   }]
 })
 // 全局路由守卫匹配使用登录令牌

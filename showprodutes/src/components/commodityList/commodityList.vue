@@ -111,7 +111,7 @@ export default {
     },
     // 新增列表
     addGood () {
-      this.$router.push('/commoditylist/addGoods')
+      this.$router.push({ name: 'addgoods' })
     },
     // 删除商品数据
     deleteGoods (id) {
@@ -122,10 +122,7 @@ export default {
       }).then(() => {
         this.$http({
           method: 'delete',
-          url: 'http://localhost:8888/api/private/v1/goods/' + id,
-          headers: {
-            Authorization: window.localStorage.getItem('token')
-          }
+          url: 'goods/' + id
         }).then(res => {
           console.log(res)
           const meta = res.data.meta

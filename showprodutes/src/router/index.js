@@ -12,6 +12,7 @@ import roletree from '@/components/rolelist/roletree.vue'
 import commoditylist from '@/components/commodityList/commodityList.vue'
 import addgoods from '@/components/commodityList/addGoods.vue'
 import sortlist from '@/components/commodityList/sortlist.vue'
+import orderlist from '@/components/orderList/orderlist.vue'
 Vue.use(Router)
 
 let router = new Router({
@@ -24,32 +25,36 @@ let router = new Router({
     name: 'index',
     component: index,
     children: [{
-      path: 'users',
-      name: 'userlist',
-      component: userlist
-    }, {
-      path: 'rights',
-      name: 'rolelist',
-      component: rolelist
-    }, {
-      path: 'roles',
-      name: 'roletree',
-      component: roletree
-    }, {
-      path: 'goods',
-      name: 'commoditylist',
-      component: commoditylist
-    },
-    {
-      path: '/addgoods',
-      name: 'addgoods',
-      component: addgoods
-    },
-    {
-      path: 'categories',
-      name: 'sortlist',
-      component: sortlist
-    }
+        path: 'users',
+        name: 'userlist',
+        component: userlist
+      }, {
+        path: 'rights',
+        name: 'rolelist',
+        component: rolelist
+      }, {
+        path: 'roles',
+        name: 'roletree',
+        component: roletree
+      }, {
+        path: 'goods',
+        name: 'commoditylist',
+        component: commoditylist
+      },
+      {
+        path: '/addgoods',
+        name: 'addgoods',
+        component: addgoods
+      },
+      {
+        path: 'categories',
+        name: 'sortlist',
+        component: sortlist
+      }, {
+        path: 'orders',
+        name: 'orders',
+        component: orderlist
+      }
     ]
   }]
 })

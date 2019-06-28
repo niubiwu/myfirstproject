@@ -13,6 +13,7 @@ import commoditylist from '@/components/commodityList/commodityList.vue'
 import addgoods from '@/components/commodityList/addGoods.vue'
 import sortlist from '@/components/commodityList/sortlist.vue'
 import orderlist from '@/components/orderList/orderlist.vue'
+import parameterlist from '@/components/commodityList/parameterlist.vue'
 Vue.use(Router)
 
 let router = new Router({
@@ -54,6 +55,11 @@ let router = new Router({
         path: 'orders',
         name: 'orders',
         component: orderlist
+      },
+      {
+        path: 'params',
+        name: 'params',
+        component: parameterlist
       }
     ]
   }]

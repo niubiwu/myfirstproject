@@ -12,7 +12,7 @@
     </el-steps>
     <el-tabs tab-position="left" @tab-click="tabClick">
       <el-tab-pane label="基本信息">
-        <el-form :model="form" :rules="rules" ref="form" :label-position="top">
+        <el-form :model="form" :rules="rules" ref="form" label-position="top">
           <el-form-item label="商品名称" prop="goods_name">
             <el-input v-model="form.goods_name" autocomplete="off"></el-input>
           </el-form-item>
@@ -43,7 +43,7 @@
                 v-for="(tag,index) in item.attr_vals.split(',')"
                 :key="index"
                 border
-                checked="true"
+                :checked="true"
               >{{tag}}</el-checkbox>
             </div>
           </el-form-item>
@@ -56,10 +56,30 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane label="商品图片">商品图片</el-tab-pane>
+      <el-tab-pane label="商品图片">
+        <el-upload
+          :on-success="imgSuccess"
+          :on-remove="removeImg"
+          :on-preview="imgPreview"
+          class="upload-demo"
+          action="http://localhost:8888/api/private/v1/upload"
+          :headers="uploadHeaders"
+          list-type="picture"
+        >
+          <el-button size="small" type="primary">点击上传</el-button>
+          {{fileList}}
+        </el-upload>
+      </el-tab-pane>
       <el-tab-pane label="商品内容">商品内容</el-tab-pane>
     </el-tabs>
     <!-- 新增弹框按钮 -->
+    <el-dialog title="提示" :visible.sync="imgVisible" width="30%">
+      <img src alt ref="myimg">
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="imgVisible = false">取 消</el-button>
+        <el-button type="primary" @click="imgVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -113,7 +133,12 @@ export default {
       sortData: [],
       value: [],
       goodsMany: [],
-      goodsOnly: []
+      goodsOnly: [],
+      fileList: [],
+      uploadHeaders: {
+        Authorization: window.localStorage.getItem("token")
+      },
+      imgVisible: false
     };
   },
   methods: {
@@ -163,8 +188,27 @@ export default {
           this.$message.error(meta.msg);
         }
       });
+    },
+    // 挂载操作图片的钩子函数
+    imgSuccess(response, file, fileList) {
+      // 管理所有上传图片的集合
+      this.fileList.push(response.data.tmp_path);
+    },
+    removeImg(file, fileList) {
+      this.fileList.forEach((item, index) => {
+        if (item === file.response.data.tmp_path) {
+          this.fileList.splice(index, 1);
+        }
+      });
+    },
+    // 预览图片
+    imgPreview(file) {
+      this.imgVisible = true;
+      let url = file.response.data.url;
+      this.$nextTick(() => {
+        this.$refs.myimg.src = url;
+      });
     }
-    // 验证
   },
   mounted() {
     this.getsortData();

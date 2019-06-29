@@ -35,7 +35,13 @@
             <el-table-column prop="attr_name" label="商品参数" width="200"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+                <el-button
+                  size="mini"
+                  plain
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showData(scope)"
+                ></el-button>
                 <el-button
                   size="mini"
                   plain
@@ -60,7 +66,13 @@
             <el-table-column prop="attr_vals" label="属性值"></el-table-column>
             <el-table-column label="操作">
               <template slot-scope="scope">
-                <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+                <el-button
+                  size="mini"
+                  plain
+                  type="primary"
+                  icon="el-icon-edit"
+                  @click="showData(scope)"
+                ></el-button>
                 <el-button
                   size="mini"
                   plain
@@ -96,7 +108,31 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="putAttr">确 定</el-button>
+        <el-button type="primary" @click="addAttr">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 属性修改框 -->
+    <el-dialog title="修改属性" :visible.sync="dialogVisible">
+      {{tabnum}}
+      <el-form :model="formData">
+        <el-form-item label="动态属性" :label-width="formLabelWidth" :required="true" v-if="tabnum===0">
+          <el-input v-model="formData.attr_name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="静态属性" :label-width="formLabelWidth" :required="true" v-if="tabnum===1">
+          <el-input v-model="formData.attr_name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="静态属性值"
+          :label-width="formLabelWidth"
+          :required="true"
+          v-if="tabnum===1"
+        >
+          <el-input v-model="formData.attr_vals" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="putAttr()">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -120,9 +156,16 @@ export default {
         attr_sel: "",
         attr_vals: ""
       },
+      formData: {
+        attr_id: "",
+        attr_name: "",
+        attr_sel: "",
+        attr_vals: ""
+      },
       tabnum: 0,
       dialogFormVisible: false,
-      formLabelWidth: "100px"
+      formLabelWidth: "100px",
+      dialogVisible: false
     };
   },
   methods: {
@@ -218,7 +261,8 @@ export default {
         }
       });
     },
-    putAttr() {
+    // 增加给商品加参数
+    addAttr() {
       let id = this.selVal[this.selVal.length - 1];
       let sel = this.tabnum === 0 ? "many" : "only";
       this.$http({
@@ -234,6 +278,30 @@ export default {
         if (meta.status === 201) {
           this.dialogFormVisible = false;
           this.getAttrData();
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+        } else {
+          this.$message.error(meta.msg);
+        }
+      });
+    },
+    //  点开渲染数据
+    showData(scope) {
+      this.dialogVisible = true;
+      this.formData.attr_name = scope.row.attr_name;
+      this.formData.attr_vals = scope.row.attr_vals;
+      this.formData.attr_id = scope.row.attr_id;
+    },
+    // 修改商品参数
+    putAttr(id, attrid) {
+      this.$http({
+        method: "put",
+        url: `categories/${id}/attributes/${attrId}`
+      }).then(res => {
+        const { data, meta } = res.data;
+        if (meta.status === 200) {
           this.$message({
             type: "success",
             message: meta.msg

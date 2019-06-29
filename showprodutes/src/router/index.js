@@ -14,6 +14,7 @@ import addgoods from '@/components/commodityList/addGoods.vue'
 import sortlist from '@/components/commodityList/sortlist.vue'
 import orderlist from '@/components/orderList/orderlist.vue'
 import parameterlist from '@/components/commodityList/parameterlist.vue'
+import reports from '@/components/reports/reports.vue'
 Vue.use(Router)
 
 let router = new Router({
@@ -60,6 +61,11 @@ let router = new Router({
         path: 'params',
         name: 'params',
         component: parameterlist
+      },
+      {
+        path: 'reports',
+        name: 'reports',
+        component: reports
       }
     ]
   }]

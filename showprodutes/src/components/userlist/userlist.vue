@@ -281,7 +281,6 @@ export default {
         })
       })
     },
-    // 打开弹窗获得数据
     getUser (id) {
       this.$http({
         method: 'get',

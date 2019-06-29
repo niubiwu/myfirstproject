@@ -127,7 +127,6 @@ export default {
     currentChange (pageNum) {
       this.pagenum = pageNum
       this.pagination()
-      console.log(this.pagesize)
     },
     // 请求数据级联选择上
     getTwoData () {
@@ -145,8 +144,10 @@ export default {
       this.dialogVisible = true
     },
     addSortData () {
-      let id = this.value[this.value.length - 1]
+      let id = this.value.length === 0 ? 0 : this.value[this.value.length - 1]
       let level = this.value.length
+      console.log(id)
+
       this.$http({
         method: 'post',
         url: 'categories',

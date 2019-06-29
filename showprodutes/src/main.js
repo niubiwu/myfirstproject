@@ -6,6 +6,12 @@ import router from './router'
 import myaxios from './assets/js/myaxios'
 // 导入element-ui模块
 import ElementUI from 'element-ui'
+import VueQuillEditor from 'vue-quill-editor'
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
 // 导入index.css样式文件
 import './assets/css/index.css'
 // 导入element.css文件
@@ -17,6 +23,8 @@ import ElTreeGrid from 'element-tree-grid'
 Vue.use(ElementUI)
 // 使用插件
 Vue.use(myaxios)
+// 引用富文本框
+Vue.use(VueQuillEditor)
 // 注册全局组件
 Vue.component(ElTreeGrid.name, ElTreeGrid)
 /* eslint-disable no-new */

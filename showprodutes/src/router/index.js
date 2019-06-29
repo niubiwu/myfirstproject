@@ -12,6 +12,9 @@ import roletree from '@/components/rolelist/roletree.vue'
 import commoditylist from '@/components/commodityList/commodityList.vue'
 import addgoods from '@/components/commodityList/addGoods.vue'
 import sortlist from '@/components/commodityList/sortlist.vue'
+import orderlist from '@/components/orderList/orderlist.vue'
+import parameterlist from '@/components/commodityList/parameterlist.vue'
+import reports from '@/components/reports/reports.vue'
 Vue.use(Router)
 
 let router = new Router({
@@ -24,30 +27,47 @@ let router = new Router({
     name: 'index',
     component: index,
     children: [{
-      path: '/userlist',
-      name: 'userlist',
-      component: userlist
-    }, {
-      path: '/rolelist',
-      name: 'rolelist',
-      component: rolelist
-    }, {
-      path: '/roletree',
-      name: 'roletree',
-      component: roletree
-    }, {
-      path: '/commoditylist',
-      name: 'commoditylist',
-      component: commoditylist
-    }, {
-      path: '/commoditylist/addgoods',
-      name: 'addgoods',
-      component: addgoods
-    }, {
-      path: '/sortlist',
-      name: 'sortlist',
-      component: sortlist
-    }]
+        path: '/users',
+        name: 'userlist',
+        component: userlist
+      }, {
+        path: '/rights',
+        name: 'rolelist',
+        component: rolelist
+      }, {
+        path: '/roles',
+        name: 'roletree',
+        component: roletree
+      }, {
+        path: '/goods',
+        name: 'commoditylist',
+        component: commoditylist
+      },
+      {
+        path: '/goods/addgoods',
+        name: 'addgoods',
+        component: addgoods
+      },
+      {
+        path: '/categories',
+        name: 'sortlist',
+        component: sortlist
+      }, {
+        path: '/orders',
+        name: 'orders',
+        component: orderlist
+      },
+      {
+        path: '/params',
+        name: 'params',
+        component: parameterlist
+      },
+      {
+        path: '/reports',
+        name: 'reports',
+        component: reports
+      }
+    ]
   }]
 })
 // 全局路由守卫匹配使用登录令牌

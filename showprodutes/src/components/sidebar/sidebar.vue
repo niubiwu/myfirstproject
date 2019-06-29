@@ -11,7 +11,7 @@
         <i class="el-icon-location"></i>
         <span>{{item1.authName}}</span>
       </template>
-      <el-menu-item v-for="item2 in item1.children" :key="item2.id" :index="item2.path">
+      <el-menu-item v-for="item2 in item1.children" :key="item2.id" :index="'/'+item2.path">
         <i class="el-icon-menu"></i>
         <span slot="title">{{item2.authName}}</span>
       </el-menu-item>
@@ -21,31 +21,31 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       navData: []
-    }
+    };
   },
   methods: {
     // 动态生成权限列表
-    getUserRights () {
+    getUserRights() {
       this.$http({
-        method: 'get',
-        url: 'menus'
+        method: "get",
+        url: "menus"
       }).then(res => {
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.navData = data
+          this.navData = data;
         } else {
-          this.$message.error(meta.msg)
+          this.$message.error(meta.msg);
         }
-      })
+      });
     }
   },
-  mounted () {
-    this.getUserRights()
+  mounted() {
+    this.getUserRights();
   }
-}
+};
 </script>
 
 <style>

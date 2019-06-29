@@ -14,7 +14,9 @@
         </template>
       </el-table-column>
       <el-table-column prop="is_send" label="是否发货"></el-table-column>
-      <el-table-column prop="create_time" label="下单时间"></el-table-column>
+      <el-table-column prop="create_time" label="下单时间">
+        <template slot-scope="scope">{{scope.row.create_time|myfilter}}</template>
+      </el-table-column>
       <el-table-column label="操作">
         <template>
           <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
@@ -36,6 +38,8 @@
 <script>
 // 导入面包屑组件
 import breadcrumb from "../layout/breadcrumb";
+// 导入时间组件
+import moment from "moment";
 export default {
   components: {
     breadcrumb: breadcrumb
@@ -52,6 +56,12 @@ export default {
       },
       total: 10
     };
+  },
+  filters: {
+    myfilter: function(val) {
+      let date = moment(val).format("YYYY-MM-DD hh:mm:ss");
+      return date;
+    }
   },
   methods: {
     getOrdersData() {

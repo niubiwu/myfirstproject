@@ -70,7 +70,9 @@
           {{fileList}}
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane label="商品内容">商品内容</el-tab-pane>
+      <el-tab-pane label="商品内容">
+        <quill-editor v-model="content" ref="myQuillEditor"></quill-editor>
+      </el-tab-pane>
     </el-tabs>
     <!-- 新增弹框按钮 -->
     <el-dialog title="提示" :visible.sync="imgVisible" width="30%">
@@ -138,7 +140,9 @@ export default {
       uploadHeaders: {
         Authorization: window.localStorage.getItem("token")
       },
-      imgVisible: false
+      imgVisible: false,
+      // 富文本框的导入
+      content: ""
     };
   },
   methods: {
@@ -235,6 +239,9 @@ export default {
 }
 .el-checkbox {
   margin-right: 0px;
+}
+.ql-editor {
+  height: 400px;
 }
 /* .el-card__body {
   height: 1000px;

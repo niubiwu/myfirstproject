@@ -27,43 +27,43 @@ let router = new Router({
     name: 'index',
     component: index,
     children: [{
-        path: 'users',
+        path: '/users',
         name: 'userlist',
         component: userlist
       }, {
-        path: 'rights',
+        path: '/rights',
         name: 'rolelist',
         component: rolelist
       }, {
-        path: 'roles',
+        path: '/roles',
         name: 'roletree',
         component: roletree
       }, {
-        path: 'goods',
+        path: '/goods',
         name: 'commoditylist',
         component: commoditylist
       },
       {
-        path: '/addgoods',
+        path: '/goods/addgoods',
         name: 'addgoods',
         component: addgoods
       },
       {
-        path: 'categories',
+        path: '/categories',
         name: 'sortlist',
         component: sortlist
       }, {
-        path: 'orders',
+        path: '/orders',
         name: 'orders',
         component: orderlist
       },
       {
-        path: 'params',
+        path: '/params',
         name: 'params',
         component: parameterlist
       },
       {
-        path: 'reports',
+        path: '/reports',
         name: 'reports',
         component: reports
       }

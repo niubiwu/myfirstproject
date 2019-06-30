@@ -23,12 +23,22 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <el-tag
-                  v-for="item in scope.row.attr_vals.split(',')"
-                  :key="item"
+                  v-for="(item,index) in scope.row.attr_vals.split(',')"
+                  :key="index"
                   closable
                   :disable-transitions="false"
+                  @close="handleClose(scope.row,index)"
                 >{{item}}</el-tag>
-                <el-button class="button-new-tag" size="small">+ New Tag</el-button>
+                <el-input
+                  class="input-new-tag"
+                  v-if="inputVisible"
+                  v-model="inputValue"
+                  ref="saveTagInput"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                ></el-input>
+                <el-button class="button-new-tag" v-else size="small" @click="showInput">+ New Tag</el-button>
               </template>
             </el-table-column>
             <el-table-column type="index" width="50"></el-table-column>
@@ -89,7 +99,6 @@
     </el-tabs>
     <!-- 属性添加框 -->
     <el-dialog title="添加属性" :visible.sync="dialogFormVisible">
-      {{tabnum}}
       <el-form :model="form">
         <el-form-item label="动态属性" :label-width="formLabelWidth" :required="true" v-if="tabnum===0">
           <el-input v-model="form.attr_name" autocomplete="off"></el-input>
@@ -157,15 +166,17 @@ export default {
         attr_vals: ""
       },
       formData: {
-        attr_id: "",
         attr_name: "",
         attr_sel: "",
         attr_vals: ""
       },
+      attr_id: "",
       tabnum: 0,
       dialogFormVisible: false,
       formLabelWidth: "100px",
-      dialogVisible: false
+      dialogVisible: false,
+      inputVisible: false,
+      inputValue: ""
     };
   },
   methods: {
@@ -291,16 +302,38 @@ export default {
       this.dialogVisible = true;
       this.formData.attr_name = scope.row.attr_name;
       this.formData.attr_vals = scope.row.attr_vals;
-      this.formData.attr_id = scope.row.attr_id;
+      this.attr_id = scope.row.attr_id;
     },
-    // 修改商品参数
-    putAttr(id, attrid) {
+    // 修改商品静态参数
+    putAttr(arr, attrid, attrName) {
+      let id = this.selVal[this.selVal.length - 1];
+      if (this.tabnum === 1) {
+        this.formData.attr_sel = "only";
+        attrid = this.attr_id;
+      } else if (this.tabnum === 0) {
+        this.formData.attr_vals = arr.join(",");
+        this.formData.attr_sel = "many";
+        this.formData.attr_name = attrName;
+      }
+
       this.$http({
         method: "put",
-        url: `categories/${id}/attributes/${attrid}`
+        url: `categories/${id}/attributes/${attrid}`,
+        data: this.formData
       }).then(res => {
-        const { data, meta } = res.data;
-        if (status === 200) {
+        console.log(res.data);
+        const { meta, data } = res.data;
+        if (meta.status === 200) {
+          this.dialogVisible = false;
+          if (this.tabnum === 1) {
+            this.getAttrData();
+          } else {
+            this.goodsMany.foreach((item, index) => {
+              if (item.attr_id === attrid) {
+                this.goodsMany[index] = data;
+              }
+            });
+          }
           this.$message({
             type: "success",
             message: meta.msg
@@ -309,6 +342,32 @@ export default {
           this.$message.error(meta.msg);
         }
       });
+    },
+    handleClose(obj, tag) {
+      let arr = obj.attr_vals.split(",");
+      arr.splice(tag, 1);
+      let attrid = obj.attr_id;
+      let attrName = obj.attr_name;
+      this.putAttr(arr, attrid, attrName);
+    },
+
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(() => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    handleInputConfirm(obj) {
+      let inputValue = this.inputValue;
+      var arr = obj.attr_vals.split(",");
+      if (inputValue) {
+        arr.push(inputValue);
+      }
+      this.inputVisible = false;
+      this.inputValue = "";
+      let attrid = obj.attr_id;
+      let attrName = obj.attr_name;
+      this.putAttr(arr, attrid, attrName);
     }
   },
   mounted() {
@@ -329,5 +388,17 @@ export default {
 }
 .btn {
   margin-bottom: 15px;
+}
+.button-new-tag {
+  margin-left: 10px;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>

@@ -71,6 +71,7 @@
         </el-upload>
       </el-tab-pane>
       <el-tab-pane label="商品内容">
+        <el-button size="small" type="success" @click="addGoods">新增商品</el-button>
         <quill-editor v-model="content" ref="myQuillEditor"></quill-editor>
       </el-tab-pane>
     </el-tabs>
@@ -100,8 +101,7 @@ export default {
         goods_name: "",
         goods_price: "",
         goods_number: "",
-        goods_weight: "",
-        goods_cat: ""
+        goods_weight: ""
       },
       rules: {
         goods_name: [
@@ -211,6 +211,31 @@ export default {
       let url = file.response.data.url;
       this.$nextTick(() => {
         this.$refs.myimg.src = url;
+      });
+    },
+    // 新增商品
+
+    addGoods() {
+      let goods_cat = this.value.join(",");
+      this.$http({
+        method: "post",
+        url: "goods",
+        data: {
+          ...this.form,
+          goods_introduce: this.content,
+          goods_cat: goods_cat
+        }
+      }).then(res => {
+        const { meta } = res.data;
+        if (meta.status === 201) {
+          this.$router.push("/goods");
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+        } else {
+          this.$message.error(meta.msg);
+        }
       });
     }
   },

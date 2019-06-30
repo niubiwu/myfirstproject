@@ -185,7 +185,6 @@ export default {
     tabclick(tabdom) {
       if (this.selVal.length === 0) {
         this.isable = true;
-        return;
       } else {
         this.isable = false;
         let tabNum = +tabdom.index;
@@ -298,10 +297,10 @@ export default {
     putAttr(id, attrid) {
       this.$http({
         method: "put",
-        url: `categories/${id}/attributes/${attrId}`
+        url: `categories/${id}/attributes/${attrid}`
       }).then(res => {
         const { data, meta } = res.data;
-        if (meta.status === 200) {
+        if (status === 200) {
           this.$message({
             type: "success",
             message: meta.msg

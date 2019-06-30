@@ -21,31 +21,31 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       navData: []
-    };
+    }
   },
   methods: {
     // 动态生成权限列表
-    getUserRights() {
+    getUserRights () {
       this.$http({
-        method: "get",
-        url: "menus"
+        method: 'get',
+        url: 'menus'
       }).then(res => {
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.navData = data;
+          this.navData = data
         } else {
-          this.$message.error(meta.msg);
+          this.$message.error(meta.msg)
         }
-      });
+      })
     }
   },
-  mounted() {
-    this.getUserRights();
+  mounted () {
+    this.getUserRights()
   }
-};
+}
 </script>
 
 <style>

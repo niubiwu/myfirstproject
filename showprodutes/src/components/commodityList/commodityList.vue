@@ -36,7 +36,7 @@
             plain
             type="danger"
             icon="el-icon-delete"
-            @click="deleteGoods(scope.row.id)"
+            @click="deleteGoods(scope.row.goods_id)"
           ></el-button>
         </template>
       </el-table-column>
@@ -134,13 +134,15 @@ export default {
           url: "goods/" + id
         }).then(res => {
           console.log(res);
-          const meta = res.data.meta;
+          const { meta } = res.data;
           if (meta.status === 200) {
             this.getGoodsData();
             this.$message({
               type: "success",
               message: meta.msg
             });
+          } else {
+            this.$message.error(meta.msg);
           }
         });
       });

@@ -27,7 +27,13 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" plain type="primary" icon="el-icon-edit"></el-button>
+            <el-button
+              size="mini"
+              plain
+              type="primary"
+              icon="el-icon-edit"
+              @click="openSort(scope.row)"
+            ></el-button>
             <el-button
               size="mini"
               plain
@@ -69,16 +75,28 @@
         <el-button type="primary" @click="addSortData">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 修改数据 -->
+    <el-dialog title="修改商品分类" :visible.sync="dialogShow" width="40%">
+      <el-form>
+        <el-form-item label="分类名称" :label-width="formLabelWidth">
+          <el-input v-model="sortname" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="putSort">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
-import breadcrumb from '../layout/breadcrumb'
+import breadcrumb from "../layout/breadcrumb";
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data () {
+  data() {
     return {
       tableData: [],
       // 前端分页功能
@@ -88,118 +106,146 @@ export default {
       // 节约性能保存一个变量
       srotData: [],
       dialogVisible: false,
-      formLabelWidth: '80px',
+      formLabelWidth: "80px",
       formData: {
         cat_pid: 0,
-        cat_name: '',
+        cat_name: "",
         cat_level: 0
       },
       cascaderData: [],
-      value: []
-    }
+      value: [],
+      dialogShow: false,
+      sortid: 0,
+      sortname: ""
+    };
   },
   methods: {
-    getsortData () {
+    getsortData() {
       this.$http({
-        method: 'get',
-        url: 'categories?type=3'
+        method: "get",
+        url: "categories?type=3"
       }).then(res => {
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.tableData = data
-          this.srotData = data
-          this.pagination()
+          this.tableData = data;
+          this.srotData = data;
+          this.pagination();
         } else {
-          this.$message.error(meta.msg)
+          this.$message.error(meta.msg);
         }
-      })
+      });
     },
-    pagination () {
-      this.total = this.srotData.length
-      var a = (this.pagenum - 1) * this.pagesize
-      var b = this.pagenum * this.pagesize
-      this.tableData = this.srotData.slice(a, b)
+    pagination() {
+      this.total = this.srotData.length;
+      var a = (this.pagenum - 1) * this.pagesize;
+      var b = this.pagenum * this.pagesize;
+      this.tableData = this.srotData.slice(a, b);
     },
-    sizeChange (pageSize) {
-      this.pagesize = pageSize
-      this.pagination()
+    sizeChange(pageSize) {
+      this.pagesize = pageSize;
+      this.pagination();
     },
-    currentChange (pageNum) {
-      this.pagenum = pageNum
-      this.pagination()
+    currentChange(pageNum) {
+      this.pagenum = pageNum;
+      this.pagination();
     },
     // 请求数据级联选择上
-    getTwoData () {
+    getTwoData() {
       this.$http({
-        method: 'get',
-        url: 'categories?type=2'
+        method: "get",
+        url: "categories?type=2"
       }).then(res => {
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
-          this.cascaderData = data
+          this.cascaderData = data;
         } else {
-          this.$message.error(meta.msg)
+          this.$message.error(meta.msg);
         }
-      })
-      this.dialogVisible = true
+      });
+      this.dialogVisible = true;
     },
-    addSortData () {
-      let id = this.value.length === 0 ? 0 : this.value[this.value.length - 1]
-      let level = this.value.length
-      console.log(id)
+    addSortData() {
+      let id = this.value.length === 0 ? 0 : this.value[this.value.length - 1];
+      let level = this.value.length;
+      console.log(id);
 
       this.$http({
-        method: 'post',
-        url: 'categories',
+        method: "post",
+        url: "categories",
         data: {
           cat_pid: id,
           cat_name: this.formData.cat_name,
           cat_level: level
         }
       }).then(res => {
-        console.log(res)
+        console.log(res);
 
-        const { meta } = res.data
+        const { meta } = res.data;
         if (meta.status === 201) {
-          this.getsortData()
+          this.getsortData();
           this.$message({
-            type: 'success',
+            type: "success",
             message: meta.msg
-          })
+          });
         } else {
-          this.$message.error(meta.msg)
+          this.$message.error(meta.msg);
         }
-      })
-      this.dialogVisible = false
+      });
+      this.dialogVisible = false;
     },
     // 删除分类
-    deleteSort (id) {
-      this.$confirm('此操作将删除此分类, 是否继续?', '温馨提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    deleteSort(id) {
+      this.$confirm("此操作将删除此分类, 是否继续?", "温馨提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       }).then(() => {
         this.$http({
-          method: 'delete',
-          url: 'categories/' + id
+          method: "delete",
+          url: "categories/" + id
         }).then(res => {
-          console.log(res)
-          const meta = res.data.meta
+          console.log(res);
+          const meta = res.data.meta;
           if (meta.status === 200) {
-            this.getsortData()
+            this.getsortData();
             this.$message({
-              type: 'success',
+              type: "success",
               message: meta.msg
-            })
+            });
           }
-        })
-      })
+        });
+      });
+    },
+    // 打开修改面版
+    openSort(obj) {
+      this.dialogShow = true;
+      this.sortid = obj.cat_id;
+      this.sortname = obj.cat_name;
+    },
+    putSort() {
+      this.$http({
+        method: "put",
+        url: "categories/" + this.sortid,
+        data: {
+          cat_name: this.sortname
+        }
+      }).then(res => {
+        const { meta } = res.data;
+        if (meta.status === 200) {
+          this.dialogShow = false;
+          this.getsortData();
+          this.$message({
+            type: "success",
+            message: meta.msg
+          });
+        }
+      });
     }
   },
-  mounted () {
-    this.getsortData()
+  mounted() {
+    this.getsortData();
   }
-}
+};
 </script>
 
 <style>

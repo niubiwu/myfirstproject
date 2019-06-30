@@ -12,7 +12,7 @@ const roletree = () => import('@/components/rolelist/roletree.vue')
 const commoditylist = () => import('@/components/commodityList/commodityList.vue')
 const addgoods = () => import('@/components/commodityList/addGoods.vue')
 const sortlist = () => import('@/components/commodityList/sortlist.vue')
-const orderlist = () => import('@/components/orderList/orderlist.vue')
+const orderlist = () => import('@/components/orderlist/orderlist.vue')
 const parameterlist = () => import('@/components/commodityList/parameterlist.vue')
 const reports = () => import('@/components/reports/reports.vue')
 Vue.use(Router)
@@ -27,46 +27,46 @@ let router = new Router({
     name: 'index',
     component: index,
     children: [{
-      path: '/users',
-      name: 'userlist',
-      component: userlist
-    }, {
-      path: '/rights',
-      name: 'rolelist',
-      component: rolelist
-    }, {
-      path: '/roles',
-      name: 'roletree',
-      component: roletree
-    }, {
-      path: '/goods',
-      name: 'commoditylist',
-      component: commoditylist
-    },
-    {
-      path: '/goods/addgoods',
-      name: 'addgoods',
-      component: addgoods
-    },
-    {
-      path: '/categories',
-      name: 'sortlist',
-      component: sortlist
-    }, {
-      path: '/orders',
-      name: 'orders',
-      component: orderlist
-    },
-    {
-      path: '/params',
-      name: 'params',
-      component: parameterlist
-    },
-    {
-      path: '/reports',
-      name: 'reports',
-      component: reports
-    }
+        path: '/users',
+        name: 'userlist',
+        component: userlist
+      }, {
+        path: '/rights',
+        name: 'rolelist',
+        component: rolelist
+      }, {
+        path: '/roles',
+        name: 'roletree',
+        component: roletree
+      }, {
+        path: '/goods',
+        name: 'commoditylist',
+        component: commoditylist
+      },
+      {
+        path: '/goods/addgoods',
+        name: 'addgoods',
+        component: addgoods
+      },
+      {
+        path: '/categories',
+        name: 'sortlist',
+        component: sortlist
+      }, {
+        path: '/orders',
+        name: 'orders',
+        component: orderlist
+      },
+      {
+        path: '/params',
+        name: 'params',
+        component: parameterlist
+      },
+      {
+        path: '/reports',
+        name: 'reports',
+        component: reports
+      }
     ]
   }]
 })

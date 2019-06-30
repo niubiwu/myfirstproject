@@ -20,16 +20,16 @@
 
 <script>
 // 引入组件header
-import Header from '../header/header'
+import Header from "../header/header";
 // 引入组件header
-import sideBar from '../sidebar/sidebar'
+import sideBar from "../sidebar/sidebar";
 export default {
   components: {
     Header: Header,
     sideBar: sideBar
   },
   methods: {}
-}
+};
 </script>
 
 <style>

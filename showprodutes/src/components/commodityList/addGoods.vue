@@ -88,47 +88,47 @@
 
 <script>
 // 导入面包屑组件
-import breadcrumb from "../layout/breadcrumb";
+import breadcrumb from '../layout/breadcrumb'
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data() {
+  data () {
     return {
       active: 0,
       // 表单的数据源
       form: {
-        goods_name: "",
-        goods_price: "",
-        goods_number: "",
-        goods_weight: ""
+        goods_name: '',
+        goods_price: '',
+        goods_number: '',
+        goods_weight: ''
       },
       rules: {
         goods_name: [
-          { required: true, message: "请输入商品名称", trigger: "blur" }
+          { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
         goods_price: [
           {
             required: true,
-            message: "请输入商品价格(必须为数字)",
-            trigger: "blur",
-            type: "number"
+            message: '请输入商品价格(必须为数字)',
+            trigger: 'blur',
+            type: 'number'
           }
         ],
         goods_number: [
           {
             required: true,
-            type: "number",
-            message: "请输入商品数量(必须为数字)",
-            trigger: "blur"
+            type: 'number',
+            message: '请输入商品数量(必须为数字)',
+            trigger: 'blur'
           }
         ],
         goods_weight: [
           {
             required: true,
-            message: "请输入商品重量(必须为数字)",
-            type: "number",
-            trigger: "blur"
+            message: '请输入商品重量(必须为数字)',
+            type: 'number',
+            trigger: 'blur'
           }
         ]
       },
@@ -138,111 +138,111 @@ export default {
       goodsOnly: [],
       fileList: [],
       uploadHeaders: {
-        Authorization: window.localStorage.getItem("token")
+        Authorization: window.localStorage.getItem('token')
       },
       imgVisible: false,
       // 富文本框的导入
-      content: ""
-    };
+      content: ''
+    }
   },
   methods: {
-    tabClick(tabdom) {
-      this.active = +tabdom.index;
-      let id = this.value[this.value.length - 1];
+    tabClick (tabdom) {
+      this.active = +tabdom.index
+      let id = this.value[this.value.length - 1]
       if (this.value.length !== 0) {
         if (this.active === 1) {
           this.$http({
-            method: "get",
+            method: 'get',
             url: `categories/${id}/attributes?sel=many`
           }).then(res => {
-            const { data, meta } = res.data;
+            const { data, meta } = res.data
             if (meta.status === 200) {
-              this.goodsMany = data;
+              this.goodsMany = data
             } else {
-              this.$message.error(meta.msg);
+              this.$message.error(meta.msg)
             }
-          });
+          })
         } else if (this.active === 2) {
           this.$http({
-            method: "get",
+            method: 'get',
             url: `categories/${id}/attributes?sel=only`
           }).then(res => {
-            const { data, meta } = res.data;
+            const { data, meta } = res.data
             if (meta.status === 200) {
-              this.goodsOnly = data;
+              this.goodsOnly = data
             } else {
-              this.$message.error(meta.msg);
+              this.$message.error(meta.msg)
             }
-          });
+          })
         }
       } else {
-        this.$message.error("请输入商品分类的信息");
+        this.$message.error('请输入商品分类的信息')
       }
     },
     // 获取级联数据
-    getsortData() {
+    getsortData () {
       this.$http({
-        method: "get",
-        url: "categories?type=3"
+        method: 'get',
+        url: 'categories?type=3'
       }).then(res => {
-        const { data, meta } = res.data;
+        const { data, meta } = res.data
         if (meta.status === 200) {
-          this.sortData = data;
+          this.sortData = data
         } else {
-          this.$message.error(meta.msg);
+          this.$message.error(meta.msg)
         }
-      });
+      })
     },
     // 挂载操作图片的钩子函数
-    imgSuccess(response, file, fileList) {
+    imgSuccess (response, file, fileList) {
       // 管理所有上传图片的集合
-      this.fileList.push(response.data.tmp_path);
+      this.fileList.push(response.data.tmp_path)
     },
-    removeImg(file, fileList) {
+    removeImg (file, fileList) {
       this.fileList.forEach((item, index) => {
         if (item === file.response.data.tmp_path) {
-          this.fileList.splice(index, 1);
+          this.fileList.splice(index, 1)
         }
-      });
+      })
     },
     // 预览图片
-    imgPreview(file) {
-      this.imgVisible = true;
-      let url = file.response.data.url;
+    imgPreview (file) {
+      this.imgVisible = true
+      let url = file.response.data.url
       this.$nextTick(() => {
-        this.$refs.myimg.src = url;
-      });
+        this.$refs.myimg.src = url
+      })
     },
     // 新增商品
 
-    addGoods() {
-      let goods_cat = this.value.join(",");
+    addGoods () {
+      let goodscat = this.value.join(',')
       this.$http({
-        method: "post",
-        url: "goods",
+        method: 'post',
+        url: 'goods',
         data: {
           ...this.form,
           goods_introduce: this.content,
-          goods_cat: goods_cat
+          goods_cat: goodscat
         }
       }).then(res => {
-        const { meta } = res.data;
+        const { meta } = res.data
         if (meta.status === 201) {
-          this.$router.push("/goods");
+          this.$router.push('/goods')
           this.$message({
-            type: "success",
+            type: 'success',
             message: meta.msg
-          });
+          })
         } else {
-          this.$message.error(meta.msg);
+          this.$message.error(meta.msg)
         }
-      });
+      })
     }
   },
-  mounted() {
-    this.getsortData();
+  mounted () {
+    this.getsortData()
   }
-};
+}
 </script>
 
 <style scope>

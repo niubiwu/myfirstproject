@@ -32,72 +32,91 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <div id="mymap"></div>
   </el-card>
 </template>
 
 <script>
 // 导入面包屑组件
-import breadcrumb from '../layout/breadcrumb'
+import breadcrumb from "../layout/breadcrumb";
 // 导入时间组件
-import moment from 'moment'
+import moment from "moment";
 export default {
   components: {
     breadcrumb: breadcrumb
   },
-  data () {
+  data() {
     return {
       ordersData: [],
       // 请求参数
       reqData: {
-        query: '',
+        query: "",
         pagenum: 1,
         pagesize: 10,
-        is_sent: ''
+        is_sent: ""
       },
       total: 10
-    }
+    };
   },
   filters: {
-    myfilter: function (val) {
-      let date = moment(val).format('YYYY-MM-DD hh:mm:ss')
-      return date
+    myfilter: function(val) {
+      let date = moment(val).format("YYYY-MM-DD hh:mm:ss");
+      return date;
     }
   },
   methods: {
-    getOrdersData () {
+    getOrdersData() {
       this.$http({
-        method: 'get',
+        method: "get",
         url: `orders?query=${this.reqData.query}&pagenum=${
           this.reqData.pagenum
         }&pagesize=${this.reqData.pagesize}`
       }).then(res => {
-        const { data, meta } = res.data
+        const { data, meta } = res.data;
         if (meta.status === 200) {
           if (data.goods.length === 0 && data.pagenum !== 1) {
-            this.reqData.pagenum--
-            this.getOrdersData()
-            return
+            this.reqData.pagenum--;
+            this.getOrdersData();
+            return;
           }
-          this.ordersData = data.goods
-          this.total = data.total
+          this.ordersData = data.goods;
+          this.total = data.total;
         }
-      })
+      });
     },
     // 页码翻页功能
-    currentChange (currentPage) {
-      this.reqData.pagenum = currentPage
-      this.getOrdersData()
+    currentChange(currentPage) {
+      this.reqData.pagenum = currentPage;
+      this.getOrdersData();
     },
     // 自定义页容量功能
-    sizeChange (pageSize) {
-      this.reqData.pagesize = pageSize
-      this.getOrdersData()
+    sizeChange(pageSize) {
+      this.reqData.pagesize = pageSize;
+      this.getOrdersData();
     }
   },
-  mounted () {
-    this.getOrdersData()
+  mounted() {
+    this.getOrdersData();
+    var map = new BMap.Map("mymap");
+    map.addControl(new BMap.NavigationControl());
+    map.addControl(new BMap.ScaleControl());
+    map.addControl(new BMap.OverviewMapControl());
+    map.addControl(new BMap.MapTypeControl());
+    map.setCurrentCity("北京");
+    var point = new BMap.Point(116.404, 39.915);
+    map.centerAndZoom(point, 15);
+    map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
+    var driving = new BMap.DrivingRoute(map, {
+      renderOptions: {
+        map: map,
+        autoViewport: true
+      }
+    });
+    var start = new BMap.Point(116.310791, 40.003419);
+    var end = new BMap.Point(116.486419, 39.877282);
+    driving.search(start, end);
   }
-}
+};
 </script>
 
 <style>
